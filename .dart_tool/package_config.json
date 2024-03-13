@@ -224,13 +224,13 @@
       "languageVersion": "3.3"
     },
     {
-      "name": "docic_mobile_sdk",
+      "name": "document_scanner_ocr",
       "rootUri": "../",
       "packageUri": "lib/",
       "languageVersion": "3.3"
     }
   ],
-  "generated": "2024-03-13T09:42:15.978408Z",
+  "generated": "2024-03-13T12:34:32.351783Z",
   "generator": "pub",
   "generatorVersion": "3.3.0"
 }
