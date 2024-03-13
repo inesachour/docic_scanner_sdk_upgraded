@@ -1,4 +1,5 @@
 import 'package:camera/camera.dart';
+import 'package:document_scanner_ocr/src/scanned_image.dart';
 import 'package:flutter/material.dart';
 
 class DocumentScannerOcr extends StatefulWidget {
@@ -36,7 +37,8 @@ class _DocumentScannerOcrState extends State<DocumentScannerOcr> {
 
   @override
   Widget build(BuildContext context) {
-    if (_cameraController == null || !(_cameraController!.value.isInitialized)) {
+    return ScannedImage();
+    /*if (_cameraController == null || !(_cameraController!.value.isInitialized)) {
       return Center(
         child: SizedBox(
           height: 100,
@@ -113,7 +115,7 @@ class _DocumentScannerOcrState extends State<DocumentScannerOcr> {
           ),
         ),
       ],
-    );
+    );*/
   }
 
 
