@@ -1,5 +1,6 @@
 import 'package:camera/camera.dart';
 import 'package:document_scanner_ocr/src/scanned_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class DocumentScannerOcr extends StatefulWidget {
@@ -13,6 +14,9 @@ class _DocumentScannerOcrState extends State<DocumentScannerOcr> {
   CameraController? _cameraController;
   late List<CameraDescription> _cameras;
   bool _isFlashOn = false;
+  List<Image> _images = [];
+
+  TextStyle textStyle = TextStyle(color: Colors.white);
 
   @override
   void initState() {
@@ -37,8 +41,7 @@ class _DocumentScannerOcrState extends State<DocumentScannerOcr> {
 
   @override
   Widget build(BuildContext context) {
-    return ScannedImage();
-    /*if (_cameraController == null || !(_cameraController!.value.isInitialized)) {
+    if (_cameraController == null || !(_cameraController!.value.isInitialized)) {
       return Center(
         child: SizedBox(
           height: 100,
@@ -92,30 +95,38 @@ class _DocumentScannerOcrState extends State<DocumentScannerOcr> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                GestureDetector(
-                  onTap: (){},
-                  child: Icon(Icons.photo, color: Colors.white,),
+                Expanded(
+                  child: GestureDetector(
+                    onTap: (){},
+                    child: Icon(Icons.photo, color: Colors.white,),
+                  ),
                 ),
 
-                GestureDetector(
-                  onTap: (){},
-                  child: Container(
-                    margin: EdgeInsets.only(bottom: 16.0),
-                    padding: EdgeInsets.all(16.0),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.white,
+                Expanded(
+                  child: GestureDetector(
+                    onTap: (){},
+                    child: Container(
+                      margin: EdgeInsets.all(6.0),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),
 
-                Container(),
+                Expanded(
+                  child: !_images.isEmpty ?
+                  Container() :
+                  Text("Confirmer \n(${_images.length})", style: textStyle, textAlign: TextAlign.center,),
+                ),
+
               ],
             ),
           ),
         ),
       ],
-    );*/
+    );
   }
 
 
