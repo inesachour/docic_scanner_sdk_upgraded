@@ -9,8 +9,9 @@ class DocumentScannerOcr extends StatefulWidget {
 }
 
 class _DocumentScannerOcrState extends State<DocumentScannerOcr> {
-  CameraController? controller;
-  late List<CameraDescription> cameras;
+  CameraController? _cameraController;
+  late List<CameraDescription> _cameras;
+  bool _isFlashOn = false;
 
   @override
   void initState() {
@@ -20,10 +21,10 @@ class _DocumentScannerOcrState extends State<DocumentScannerOcr> {
         throw("No camera was found!");
       }
       else{
-        cameras = value;
+        _cameras = value;
       }
-      controller = CameraController(cameras[0], ResolutionPreset.max);
-      controller!.initialize().then((_) {
+      _cameraController = CameraController(_cameras[0], ResolutionPreset.max);
+      _cameraController!.initialize().then((_) {
         if(!mounted){
           return;
         }
@@ -35,7 +36,7 @@ class _DocumentScannerOcrState extends State<DocumentScannerOcr> {
 
   @override
   Widget build(BuildContext context) {
-    if (controller == null || !(controller!.value.isInitialized)) {
+    if (_cameraController == null || !(_cameraController!.value.isInitialized)) {
       return Container();
     }
     return Column(
@@ -48,8 +49,18 @@ class _DocumentScannerOcrState extends State<DocumentScannerOcr> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 GestureDetector(
-                  onTap: (){},
-                  child: Icon(Icons.flash_off, color: Colors.white,),
+                  onTap: (){
+                    setState(() {
+                      _isFlashOn = !_isFlashOn;
+                      if(_isFlashOn){
+                        _cameraController!.setFlashMode(FlashMode.torch);
+                      }
+                      else{
+                        _cameraController!.setFlashMode(FlashMode.off);
+                      }
+                    });
+                  },
+                  child: Icon(_isFlashOn ? Icons.flash_on : Icons.flash_off, color: Colors.white,),
                 ),
               ],
             ),
@@ -59,8 +70,8 @@ class _DocumentScannerOcrState extends State<DocumentScannerOcr> {
         Expanded(
           flex: 8,
           child: AspectRatio(
-            aspectRatio: controller!.value.aspectRatio,
-            child: CameraPreview(controller!),
+            aspectRatio: _cameraController!.value.aspectRatio,
+            child: CameraPreview(_cameraController!),
           ),
         ),
 
@@ -100,7 +111,7 @@ class _DocumentScannerOcrState extends State<DocumentScannerOcr> {
 
   @override
   void dispose() {
-    controller?.dispose();
+    _cameraController?.dispose();
     super.dispose();
   }
 }
