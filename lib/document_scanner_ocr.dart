@@ -37,7 +37,15 @@ class _DocumentScannerOcrState extends State<DocumentScannerOcr> {
   @override
   Widget build(BuildContext context) {
     if (_cameraController == null || !(_cameraController!.value.isInitialized)) {
-      return Container();
+      return Center(
+        child: SizedBox(
+          height: 100,
+          width: 100,
+          child: CircularProgressIndicator(
+            color: Colors.grey,
+          ),
+        ),
+      );
     }
     return Column(
       children: [
