@@ -11,6 +11,7 @@ dependencies:
   camera: ^0.10.5+9
   flutter:
     sdk: flutter
+  image_picker: ^1.0.7
   plugin_platform_interface: ^2.0.2
 
 dev_dependencies:

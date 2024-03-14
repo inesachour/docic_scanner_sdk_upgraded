@@ -1,6 +1,4 @@
 import 'package:camera/camera.dart';
-import 'package:document_scanner_ocr/src/scanned_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class DocumentScannerOcr extends StatefulWidget {
@@ -16,33 +14,32 @@ class _DocumentScannerOcrState extends State<DocumentScannerOcr> {
   bool _isFlashOn = false;
   List<Image> _images = [];
 
-  TextStyle textStyle = TextStyle(color: Colors.white);
+  TextStyle textStyle = const TextStyle(color: Colors.white);
 
   @override
   void initState() {
     super.initState();
     availableCameras().then((value) {
-      if(value.isEmpty){
-        throw("No camera was found!");
-      }
-      else{
+      if (value.isEmpty) {
+        throw ("No camera was found!");
+      } else {
         _cameras = value;
       }
       _cameraController = CameraController(_cameras[0], ResolutionPreset.max);
       _cameraController!.initialize().then((_) {
-        if(!mounted){
+        if (!mounted) {
           return;
         }
         setState(() {});
       });
     });
-
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_cameraController == null || !(_cameraController!.value.isInitialized)) {
-      return Center(
+    if (_cameraController == null ||
+        !(_cameraController!.value.isInitialized)) {
+      return const Center(
         child: SizedBox(
           height: 100,
           width: 100,
@@ -54,7 +51,6 @@ class _DocumentScannerOcrState extends State<DocumentScannerOcr> {
     }
     return Column(
       children: [
-
         Expanded(
           child: Container(
             color: Colors.black,
@@ -62,24 +58,25 @@ class _DocumentScannerOcrState extends State<DocumentScannerOcr> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 GestureDetector(
-                  onTap: (){
+                  onTap: () {
                     setState(() {
                       _isFlashOn = !_isFlashOn;
-                      if(_isFlashOn){
+                      if (_isFlashOn) {
                         _cameraController!.setFlashMode(FlashMode.torch);
-                      }
-                      else{
+                      } else {
                         _cameraController!.setFlashMode(FlashMode.off);
                       }
                     });
                   },
-                  child: Icon(_isFlashOn ? Icons.flash_on : Icons.flash_off, color: Colors.white,),
+                  child: Icon(
+                    _isFlashOn ? Icons.flash_on : Icons.flash_off,
+                    color: Colors.white,
+                  ),
                 ),
               ],
             ),
           ),
         ),
-
         Expanded(
           flex: 8,
           child: AspectRatio(
@@ -87,7 +84,6 @@ class _DocumentScannerOcrState extends State<DocumentScannerOcr> {
             child: CameraPreview(_cameraController!),
           ),
         ),
-
         Expanded(
           child: Container(
             color: Colors.black,
@@ -97,30 +93,34 @@ class _DocumentScannerOcrState extends State<DocumentScannerOcr> {
               children: [
                 Expanded(
                   child: GestureDetector(
-                    onTap: (){},
-                    child: Icon(Icons.photo, color: Colors.white,),
+                    onTap: () {},
+                    child: const Icon(
+                      Icons.photo,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
-
                 Expanded(
                   child: GestureDetector(
-                    onTap: (){},
+                    onTap: () {},
                     child: Container(
-                      margin: EdgeInsets.all(6.0),
-                      decoration: BoxDecoration(
+                      margin: const EdgeInsets.all(6.0),
+                      decoration: const BoxDecoration(
                         shape: BoxShape.circle,
                         color: Colors.white,
                       ),
                     ),
                   ),
                 ),
-
                 Expanded(
-                  child: !_images.isEmpty ?
-                  Container() :
-                  Text("Confirmer \n(${_images.length})", style: textStyle, textAlign: TextAlign.center,),
+                  child: _images.isEmpty
+                      ? Container()
+                      : Text(
+                          "Confirmer \n(${_images.length})",
+                          style: textStyle,
+                          textAlign: TextAlign.center,
+                        ),
                 ),
-
               ],
             ),
           ),
@@ -128,7 +128,6 @@ class _DocumentScannerOcrState extends State<DocumentScannerOcr> {
       ],
     );
   }
-
 
   @override
   void dispose() {

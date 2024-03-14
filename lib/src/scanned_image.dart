@@ -8,45 +8,50 @@ class ScannedImage extends StatefulWidget {
 }
 
 class _ScannedImageState extends State<ScannedImage> {
-
-  TextStyle textStyle = TextStyle(color: Colors.white);
+  TextStyle textStyle = const TextStyle(color: Colors.white);
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-
         Expanded(
           child: Container(
             color: Colors.black,
-            padding: EdgeInsets.only(left: 15.0, right: 15.0, top: 10.0),
+            padding: const EdgeInsets.only(left: 15.0, right: 15.0, top: 10.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 GestureDetector(
-                  onTap: (){},
-                  child: Text("Annuler", style: textStyle,),
+                  onTap: () {},
+                  child: Text(
+                    "Annuler",
+                    style: textStyle,
+                  ),
                 ),
                 GestureDetector(
-                  onTap: (){},
-                  child: Text("Page 1", style: textStyle,),
+                  onTap: () {},
+                  child: Text(
+                    "Page 1",
+                    style: textStyle,
+                  ),
                 ),
                 GestureDetector(
-                  onTap: (){},
-                  child: Text("Suivant", style: textStyle,),
+                  onTap: () {},
+                  child: Text(
+                    "Suivant",
+                    style: textStyle,
+                  ),
                 ),
               ],
             ),
           ),
         ),
-
         Expanded(
           flex: 8,
           child: Container(
             color: Colors.grey,
           ),
         ),
-
         Expanded(
           child: Container(
             color: Colors.black,
@@ -55,15 +60,19 @@ class _ScannedImageState extends State<ScannedImage> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 GestureDetector(
-                  onTap: (){},
-                  child: Icon(Icons.crop, color: Colors.white,),
+                  onTap: () {},
+                  child: const Icon(
+                    Icons.crop,
+                    color: Colors.white,
+                  ),
                 ),
-
                 GestureDetector(
-                  onTap: (){},
-                  child: Icon(Icons.rotate_right, color: Colors.white,),
+                  onTap: () {},
+                  child: const Icon(
+                    Icons.rotate_right,
+                    color: Colors.white,
+                  ),
                 ),
-
               ],
             ),
           ),
