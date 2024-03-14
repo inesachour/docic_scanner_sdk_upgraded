@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class ScannedImage extends StatefulWidget {
-  const ScannedImage({super.key});
+class ScanImageScreen extends StatefulWidget {
+  const ScanImageScreen({super.key});
 
   @override
-  State<ScannedImage> createState() => _ScannedImageState();
+  State<ScanImageScreen> createState() => _ScanImageScreenState();
 }
 
-class _ScannedImageState extends State<ScannedImage> {
+class _ScanImageScreenState extends State<ScanImageScreen> {
   TextStyle textStyle = const TextStyle(color: Colors.white);
 
   @override
