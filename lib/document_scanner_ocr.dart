@@ -1,5 +1,6 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class DocumentScannerOcr extends StatefulWidget {
   const DocumentScannerOcr({super.key});
@@ -15,6 +16,11 @@ class _DocumentScannerOcrState extends State<DocumentScannerOcr> {
   List<Image> _images = [];
 
   TextStyle textStyle = const TextStyle(color: Colors.white);
+
+  Future<List<XFile>> pickImagesFromGallery() async {
+    List<XFile> images = await ImagePicker().pickMultiImage();
+    return images;
+  }
 
   @override
   void initState() {
@@ -93,7 +99,9 @@ class _DocumentScannerOcrState extends State<DocumentScannerOcr> {
               children: [
                 Expanded(
                   child: GestureDetector(
-                    onTap: () {},
+                    onTap: () async {
+                      final images = await pickImagesFromGallery();
+                    },
                     child: const Icon(
                       Icons.photo,
                       color: Colors.white,
