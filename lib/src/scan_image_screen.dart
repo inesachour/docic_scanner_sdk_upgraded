@@ -1,14 +1,24 @@
+import 'dart:io';
+
+import 'package:camera/camera.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 class ScanImageScreen extends StatefulWidget {
-  const ScanImageScreen({super.key});
+  List<XFile> images;
+  bool isFromGallery;
+
+  ScanImageScreen({super.key, required this.images, this.isFromGallery = false});
 
   @override
   State<ScanImageScreen> createState() => _ScanImageScreenState();
 }
 
 class _ScanImageScreenState extends State<ScanImageScreen> {
-  TextStyle textStyle = const TextStyle(color: Colors.white);
+  TextStyle textStyle = const TextStyle(color: Colors.white, decoration: TextDecoration.none, fontSize: 14);
+  int _currentImageIndex = 0;
+  bool _isLoading = true;
 
   @override
   Widget build(BuildContext context) {
@@ -21,35 +31,70 @@ class _ScanImageScreenState extends State<ScanImageScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                GestureDetector(
-                  onTap: () {},
-                  child: Text(
-                    "Annuler",
-                    style: textStyle,
+                if(!_isLoading)
+                  GestureDetector(
+                    onTap: () {},
+                    child: Text(
+                      "Annuler",
+                      style: textStyle,
+                    ),
+                  ),
+
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () {},
+                    child: Text(
+                      "Page ${_currentImageIndex+1}",
+                      style: textStyle,
+                      textAlign: TextAlign.center,
+                    ),
                   ),
                 ),
-                GestureDetector(
-                  onTap: () {},
-                  child: Text(
-                    "Page 1",
-                    style: textStyle,
+
+                if(!_isLoading)
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        if(widget.images.length-1 > _currentImageIndex){
+                          _currentImageIndex++;
+                        }
+                        else{
+                          if(widget.isFromGallery){
+                            //TODO show pop to add more images or not
+                          }
+                          //TODO return processed image(s)
+                        }
+                      });
+                    },
+                    child: Text(
+                      "Suivant",
+                      style: textStyle,
+                    ),
                   ),
-                ),
-                GestureDetector(
-                  onTap: () {},
-                  child: Text(
-                    "Suivant",
-                    style: textStyle,
-                  ),
-                ),
               ],
             ),
           ),
         ),
+
         Expanded(
-          flex: 8,
-          child: Container(
-            color: Colors.grey,
+          flex: 7,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Container(
+                child: Image.file(File(widget.images[_currentImageIndex].path), fit: BoxFit.fitHeight,),
+              ),
+
+              Center(
+                child: SizedBox(
+                  height: 100,
+                  width: 100,
+                  child: CircularProgressIndicator(
+                    color: Colors.grey,
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
         Expanded(
@@ -59,20 +104,24 @@ class _ScanImageScreenState extends State<ScanImageScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                GestureDetector(
-                  onTap: () {},
-                  child: const Icon(
-                    Icons.crop,
-                    color: Colors.white,
+
+                if(!_isLoading)
+                  GestureDetector(
+                    onTap: () {},
+                    child: const Icon(
+                      Icons.crop,
+                      color: Colors.white,
+                    ),
                   ),
-                ),
-                GestureDetector(
-                  onTap: () {},
-                  child: const Icon(
-                    Icons.rotate_right,
-                    color: Colors.white,
+
+                if(!_isLoading)
+                  GestureDetector(
+                    onTap: () {},
+                    child: const Icon(
+                      Icons.rotate_right,
+                      color: Colors.white,
+                    ),
                   ),
-                ),
               ],
             ),
           ),
