@@ -32,7 +32,8 @@ class _CameraScreenState extends State<CameraScreen> {
       } else {
         _cameras = value;
       }
-      _cameraController = CameraController(_cameras[0], ResolutionPreset.max);
+      _cameraController = CameraController(_cameras[0], ResolutionPreset.max,
+          enableAudio: false);
       _cameraController!.initialize().then((_) {
         if (!mounted) {
           return;
