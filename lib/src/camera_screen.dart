@@ -60,6 +60,7 @@ class _CameraScreenState extends State<CameraScreen> {
       children: [
         Expanded(
           child: Container(
+            padding: EdgeInsets.only(top: 25.0),
             color: Colors.black,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -102,8 +103,10 @@ class _CameraScreenState extends State<CameraScreen> {
                   child: GestureDetector(
                     onTap: () async {
                       final images = await pickImagesFromGallery();
-                      if(images.isNotEmpty){
-                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => ScanImageScreen(images: images)));
+                      if (images.isNotEmpty) {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) =>
+                                ScanImageScreen(images: images)));
                       }
                     },
                     child: const Icon(
@@ -128,10 +131,10 @@ class _CameraScreenState extends State<CameraScreen> {
                   child: _images.isEmpty
                       ? Container()
                       : Text(
-                    "Confirmer \n(${_images.length})",
-                    style: textStyle,
-                    textAlign: TextAlign.center,
-                  ),
+                          "Confirmer \n(${_images.length})",
+                          style: textStyle,
+                          textAlign: TextAlign.center,
+                        ),
                 ),
               ],
             ),

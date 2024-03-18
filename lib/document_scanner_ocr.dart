@@ -9,11 +9,8 @@ class DocumentScannerOcr extends StatefulWidget {
 }
 
 class _DocumentScannerOcrState extends State<DocumentScannerOcr> {
-
   @override
   Widget build(BuildContext context) {
     return CameraScreen();
   }
-
-
 }
