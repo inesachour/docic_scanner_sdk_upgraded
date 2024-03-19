@@ -1,4 +1,5 @@
 import 'package:camera/camera.dart';
+import 'package:document_scanner_ocr/src/add_page_popup.dart';
 import 'package:document_scanner_ocr/src/scan_image_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -118,7 +119,9 @@ class _CameraScreenState extends State<CameraScreen> {
                 ),
                 Expanded(
                   child: GestureDetector(
-                    onTap: () {},
+                    onTap: () {
+                      //showDialog(barrierDismissible: false ,context: context, builder: (context) => AddPagePopup());
+                    },
                     child: Container(
                       margin: const EdgeInsets.all(6.0),
                       decoration: const BoxDecoration(
