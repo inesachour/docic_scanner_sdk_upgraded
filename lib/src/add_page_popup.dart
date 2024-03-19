@@ -15,7 +15,11 @@ class AddPagePopup extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text("Voulez vous ajouter une autre page ?", textAlign: TextAlign.center, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
+            const Text(
+              "Voulez vous ajouter une autre page ?",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
             const SizedBox(
               height: 18.0,
             ),
@@ -23,26 +27,36 @@ class AddPagePopup extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 GestureDetector(
-                  onTap: (){},
+                  onTap: () {},
                   child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 35.0),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 6.0, horizontal: 35.0),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10.0),
                       color: const Color(0xff696666),
                     ),
-                    child: const Text("Non", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),),
+                    child: const Text(
+                      "Non",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16),
+                    ),
                   ),
                 ),
-
                 GestureDetector(
-                  onTap: (){},
+                  onTap: () {},
                   child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 35.0),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 6.0, horizontal: 35.0),
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10.0),
-                      border: Border.all(color: const Color(0xff696666))
+                        borderRadius: BorderRadius.circular(10.0),
+                        border: Border.all(color: const Color(0xff696666))),
+                    child: const Text(
+                      "Oui",
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                     ),
-                    child: const Text("Oui", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),),
                   ),
                 ),
               ],

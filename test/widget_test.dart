@@ -6,33 +6,39 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mockito/mockito.dart';
 
-
 class MockImagePicker extends Mock implements ImagePicker {
   @override
-  Future<List<XFile>> pickMultiImage({double? maxWidth, double? maxHeight, int? imageQuality, bool requestFullMetadata = true}) => super.noSuchMethod(Invocation.method(#start, []), returnValue: Future(() => <XFile>[]));
+  Future<List<XFile>> pickMultiImage(
+          {double? maxWidth,
+          double? maxHeight,
+          int? imageQuality,
+          bool requestFullMetadata = true}) =>
+      super.noSuchMethod(Invocation.method(#start, []),
+          returnValue: Future(() => <XFile>[]));
 }
 
 class MockCameraDescription extends Mock implements CameraDescription {}
 
 class MockAvailableCameras extends Mock {
-  Future<List<CameraDescription>> call() => super.noSuchMethod(Invocation.method(#start, []), returnValue: Future(() => <CameraDescription>[]));
+  Future<List<CameraDescription>> call() =>
+      super.noSuchMethod(Invocation.method(#start, []),
+          returnValue: Future(() => <CameraDescription>[]));
 }
 
-void main(){
-
+void main() {
   late List<XFile> mockImages = [
-  XFile('images/tests/document1.jpg'),
-  XFile('images/tests/document1.jpg'),
+    XFile('images/tests/document1.jpg'),
+    XFile('images/tests/document1.jpg'),
   ];
 
-  setUpAll((){
+  setUpAll(() {
     mockImages = [
       XFile('images/tests/document1.jpg'),
       XFile('images/tests/document1.jpg'),
     ];
   });
 
-  group("ScanImageScreen Widget Tests", (){
+  group("ScanImageScreen Widget Tests", () {
     testWidgets('ScanImageScreen UI Test', (WidgetTester tester) async {
       // Build our widget and trigger a frame.
       await tester.pumpWidget(MaterialApp(
@@ -59,11 +65,9 @@ void main(){
 
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
     });*/
-
   });
 
-  group("CameraScreen Widget Tests", (){
-
+  group("CameraScreen Widget Tests", () {
     late Future<List<CameraDescription>> Function() availableCameras;
 
     setUp(() {
@@ -77,7 +81,5 @@ void main(){
 
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
     });
-
   });
-
 }
