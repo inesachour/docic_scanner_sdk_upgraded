@@ -47,6 +47,23 @@ android {
 
     defaultConfig {
         minSdkVersion 19
+
+        externalNativeBuild {
+            cmake {
+                // Enabling exceptions, RTTI
+                // And setting C++ standard version
+                cppFlags '-frtti -fexceptions -std=c++11'
+
+                // Shared runtime for shared libraries
+                arguments "-DANDROID_STL=c++_shared"
+            }
+        }
+    }
+
+    externalNativeBuild {
+        cmake {
+            path "CMakeLists.txt"
+        }
     }
 
     dependencies {

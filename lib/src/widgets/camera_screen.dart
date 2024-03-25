@@ -1,6 +1,5 @@
 import 'package:camera/camera.dart';
-import 'package:document_scanner_ocr/src/add_page_popup.dart';
-import 'package:document_scanner_ocr/src/scan_image_screen.dart';
+import 'package:document_scanner_ocr/src/widgets/scan_image_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
