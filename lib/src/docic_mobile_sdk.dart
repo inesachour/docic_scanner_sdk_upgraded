@@ -14,9 +14,8 @@ ffi.DynamicLibrary _lib = Platform.isAndroid
     : ffi.DynamicLibrary.process();
 
 // Looking for the functions
-final _VersionFunc _version = _lib
-    .lookup<ffi.NativeFunction<_version_func>>('version')
-    .asFunction();
+final _VersionFunc _version =
+    _lib.lookup<ffi.NativeFunction<_version_func>>('version').asFunction();
 
 String opencvVersion() {
   return _version().toDartString();
