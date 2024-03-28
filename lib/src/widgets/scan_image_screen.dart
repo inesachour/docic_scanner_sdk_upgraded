@@ -39,12 +39,16 @@ class _ScanImageScreenState extends State<ScanImageScreen> {
     });
 
     final ReceivePort receivePort = ReceivePort();
-    await Isolate.spawn<ScanImageArguments>(scanCurrentImageIsolated, ScanImageArguments(image, receivePort.sendPort));
+    await Isolate.spawn<ScanImageArguments>(scanCurrentImageIsolated,
+        ScanImageArguments(image, receivePort.sendPort));
     sub = receivePort.listen((processedImageBytes) async {
       setState(() {
         _isLoading = false;
-        if(processedImageBytes != null){
-          _currentScannedImage = Image.memory(processedImageBytes, fit: BoxFit.fitHeight,);
+        if (processedImageBytes != null) {
+          _currentScannedImage = Image.memory(
+            processedImageBytes,
+            fit: BoxFit.fitHeight,
+          );
           processedImages.add(processedImageBytes);
           pdf.addPage(pw.Page(build: (pw.Context context) {
             return pw.Center(
@@ -162,21 +166,19 @@ class _ScanImageScreenState extends State<ScanImageScreen> {
                     onTap: () async {
                       _currentImageIndex++;
 
-                      if(_currentImageIndex < imagesNumber - 1){
+                      if (_currentImageIndex < imagesNumber - 1) {
                         _currentScannedImage = null;
                         scanCurrentImage(widget.images[_currentImageIndex]);
-                      }
-                      else if(_currentImageIndex == imagesNumber - 1){
+                      } else if (_currentImageIndex == imagesNumber - 1) {
                         _isConfirm = true;
                         scanCurrentImage(widget.images[_currentImageIndex]);
-                      }
-                      else{
+                      } else {
                         //TODO SAVE PDF or SHOW IT
                       }
-                      setState((){});
+                      setState(() {});
                     },
                     child: Text(
-                      _isConfirm ? "Confirmer\n($imagesNumber)" :"Suivant",
+                      _isConfirm ? "Confirmer\n($imagesNumber)" : "Suivant",
                       style: textStyle,
                       textAlign: TextAlign.center,
                     ),
@@ -188,7 +190,6 @@ class _ScanImageScreenState extends State<ScanImageScreen> {
       ],
     );
   }
-
 }
 
 class ScanImageArguments {
