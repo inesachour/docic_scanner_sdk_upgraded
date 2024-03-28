@@ -8,6 +8,7 @@ import 'package:camera/camera.dart';
 import 'package:document_scanner_ocr/src/docic_mobile_sdk.dart';
 import 'package:ffi/ffi.dart';
 import 'package:flutter/material.dart';
+import 'package:pdf/widgets.dart' as pw;
 
 class ScanImageScreen extends StatefulWidget {
   List<XFile> images;
@@ -28,8 +29,9 @@ class _ScanImageScreenState extends State<ScanImageScreen> {
   late bool _isConfirm;
   Image? _currentScannedImage;
   late StreamSubscription sub;
-  List<Image> processedImages = [];
+  List<Uint8List> processedImages = [];
   late int imagesNumber;
+  final pdf = pw.Document();
 
   Future<Image?> scanCurrentImage(XFile image) async {
     setState(() {
@@ -38,12 +40,17 @@ class _ScanImageScreenState extends State<ScanImageScreen> {
 
     final ReceivePort receivePort = ReceivePort();
     await Isolate.spawn<ScanImageArguments>(scanCurrentImageIsolated, ScanImageArguments(image, receivePort.sendPort));
-    sub = receivePort.listen((processedImage) async {
+    sub = receivePort.listen((processedImageBytes) async {
       setState(() {
-        _currentScannedImage = processedImage;
         _isLoading = false;
-        if(processedImage != null){
-          processedImages.add(processedImage);
+        if(processedImageBytes != null){
+          _currentScannedImage = Image.memory(processedImageBytes, fit: BoxFit.fitHeight,);
+          processedImages.add(processedImageBytes);
+          pdf.addPage(pw.Page(build: (pw.Context context) {
+            return pw.Center(
+              child: pw.Image(pw.MemoryImage(processedImageBytes)),
+            ); // Center
+          }));
         }
       });
     });
@@ -152,18 +159,21 @@ class _ScanImageScreenState extends State<ScanImageScreen> {
                   ),
                 if (!_isLoading)
                   GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        if(_currentImageIndex < imagesNumber - 1){
-                          _currentImageIndex++;
-                          _currentScannedImage = null;
-                          scanCurrentImage(widget.images[_currentImageIndex]);
-                        }
+                    onTap: () async {
+                      _currentImageIndex++;
 
-                        if(_currentImageIndex == imagesNumber - 1){
-                          _isConfirm = true;
-                        }
-                      });
+                      if(_currentImageIndex < imagesNumber - 1){
+                        _currentScannedImage = null;
+                        scanCurrentImage(widget.images[_currentImageIndex]);
+                      }
+                      else if(_currentImageIndex == imagesNumber - 1){
+                        _isConfirm = true;
+                        scanCurrentImage(widget.images[_currentImageIndex]);
+                      }
+                      else{
+                        //TODO SAVE PDF or SHOW IT
+                      }
+                      setState((){});
                     },
                     child: Text(
                       _isConfirm ? "Confirmer\n($imagesNumber)" :"Suivant",
@@ -203,5 +213,5 @@ void scanCurrentImageIsolated(ScanImageArguments args) {
   malloc.free(cppPointer);
   malloc.free(encodedOutputImage);
 
-  args.sendPort.send(Image.memory(encodedImageBytes, fit: BoxFit.fitHeight,));
+  args.sendPort.send(encodedImageBytes);
 }
