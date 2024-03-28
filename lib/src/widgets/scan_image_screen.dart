@@ -119,7 +119,7 @@ class _ScanImageScreenState extends State<ScanImageScreen> {
                     height: 100,
                     width: 100,
                     child: CircularProgressIndicator(
-                      color: Colors.grey,
+                      color: Color(0xff808080),
                       strokeWidth: 7,
                     ),
                   ),
