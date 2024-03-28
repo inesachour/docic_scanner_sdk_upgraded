@@ -25,7 +25,7 @@ class _ScanImageScreenState extends State<ScanImageScreen> {
       color: Colors.white, decoration: TextDecoration.none, fontSize: 14);
   int _currentImageIndex = 0;
   bool _isLoading = true;
-  bool _isConfirm = false;
+  late bool _isConfirm;
   Image? _currentScannedImage;
   late StreamSubscription sub;
   List<Image> processedImages = [];
@@ -55,6 +55,7 @@ class _ScanImageScreenState extends State<ScanImageScreen> {
   void initState() {
     super.initState();
     imagesNumber = widget.isFromGallery ? widget.images.length : 0;
+    _isConfirm = (imagesNumber - 1 == _currentImageIndex);
     scanCurrentImage(widget.images[0]);
   }
 
@@ -119,6 +120,7 @@ class _ScanImageScreenState extends State<ScanImageScreen> {
                     width: 100,
                     child: CircularProgressIndicator(
                       color: Colors.grey,
+                      strokeWidth: 7,
                     ),
                   ),
                 ),
@@ -152,21 +154,21 @@ class _ScanImageScreenState extends State<ScanImageScreen> {
                   GestureDetector(
                     onTap: () {
                       setState(() {
-                        if (widget.images.length - 1 > _currentImageIndex) {
+                        if(_currentImageIndex < imagesNumber - 1){
                           _currentImageIndex++;
                           _currentScannedImage = null;
                           scanCurrentImage(widget.images[_currentImageIndex]);
-                        } else {
-                          if (widget.isFromGallery) {
-                            _isConfirm = true;
-                          }
-                          //TODO return processed image(s) or popup to add image
+                        }
+
+                        if(_currentImageIndex == imagesNumber - 1){
+                          _isConfirm = true;
                         }
                       });
                     },
                     child: Text(
                       _isConfirm ? "Confirmer\n($imagesNumber)" :"Suivant",
                       style: textStyle,
+                      textAlign: TextAlign.center,
                     ),
                   ),
               ],
