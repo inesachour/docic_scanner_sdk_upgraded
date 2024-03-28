@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:ffi';
 import 'dart:io';
+import 'dart:isolate';
 import 'dart:typed_data';
 
 import 'package:camera/camera.dart';
@@ -24,32 +26,23 @@ class _ScanImageScreenState extends State<ScanImageScreen> {
   int _currentImageIndex = 0;
   bool _isLoading = true;
   Image? _currentScannedImage;
+  late StreamSubscription sub;
 
-  Image? scanCurrentImage(XFile image) {
+  Future<Image?> scanCurrentImage(XFile image) async {
     setState(() {
       _isLoading = true;
     });
 
-    Pointer<Pointer<Uint8>> encodedOutputImage = malloc.allocate(8);
-    int encodedImageLength = scanImage(image.path, encodedOutputImage);
-
-    setState(() {
-      _isLoading = false;
+    final ReceivePort receivePort = ReceivePort();
+    await Isolate.spawn<ScanImageArguments>(scanCurrentImageIsolated, ScanImageArguments(image, receivePort.sendPort));
+    sub = receivePort.listen((processedImage) async {
+      setState(() {
+        _currentScannedImage = processedImage;
+        _isLoading = false;
+      });
     });
 
-    if (encodedImageLength == 0) {
-      return null;
-    }
-
-    Pointer<Uint8> cppPointer = encodedOutputImage[0];
-    Uint8List encodedImageBytes = cppPointer.asTypedList(encodedImageLength);
-
-    malloc.free(cppPointer);
-    malloc.free(encodedOutputImage);
-
-    setState(() {
-      _currentScannedImage = Image.memory(encodedImageBytes, fit: BoxFit.fitHeight,);
-    });
+    //await sub.cancel();
 
     return _currentScannedImage;
   }
@@ -57,7 +50,15 @@ class _ScanImageScreenState extends State<ScanImageScreen> {
   @override
   void initState() {
     super.initState();
-    Image? image = scanCurrentImage(widget.images[0]);
+    scanCurrentImage(widget.images[0]);
+  }
+
+  @override
+  void dispose() async {
+    Future.delayed(Duration.zero, () async {
+      await sub.cancel();
+    });
+    super.dispose();
   }
 
   @override
@@ -167,4 +168,30 @@ class _ScanImageScreenState extends State<ScanImageScreen> {
       ],
     );
   }
+
+}
+
+class ScanImageArguments {
+  final XFile image;
+  final SendPort sendPort;
+
+  ScanImageArguments(this.image, this.sendPort);
+}
+
+void scanCurrentImageIsolated(ScanImageArguments args) {
+  Pointer<Pointer<Uint8>> encodedOutputImage = malloc.allocate(8);
+  int encodedImageLength = scanImage(args.image.path, encodedOutputImage);
+
+  if (encodedImageLength == 0) {
+    args.sendPort.send(null);
+    return;
+  }
+
+  Pointer<Uint8> cppPointer = encodedOutputImage[0];
+  Uint8List encodedImageBytes = cppPointer.asTypedList(encodedImageLength);
+
+  malloc.free(cppPointer);
+  malloc.free(encodedOutputImage);
+
+  args.sendPort.send(Image.memory(encodedImageBytes, fit: BoxFit.fitHeight,));
 }
