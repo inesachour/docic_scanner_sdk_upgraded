@@ -25,8 +25,11 @@ class _ScanImageScreenState extends State<ScanImageScreen> {
       color: Colors.white, decoration: TextDecoration.none, fontSize: 14);
   int _currentImageIndex = 0;
   bool _isLoading = true;
+  bool _isConfirm = false;
   Image? _currentScannedImage;
   late StreamSubscription sub;
+  List<Image> processedImages = [];
+  late int imagesNumber;
 
   Future<Image?> scanCurrentImage(XFile image) async {
     setState(() {
@@ -39,10 +42,11 @@ class _ScanImageScreenState extends State<ScanImageScreen> {
       setState(() {
         _currentScannedImage = processedImage;
         _isLoading = false;
+        if(processedImage != null){
+          processedImages.add(processedImage);
+        }
       });
     });
-
-    //await sub.cancel();
 
     return _currentScannedImage;
   }
@@ -50,6 +54,7 @@ class _ScanImageScreenState extends State<ScanImageScreen> {
   @override
   void initState() {
     super.initState();
+    imagesNumber = widget.isFromGallery ? widget.images.length : 0;
     scanCurrentImage(widget.images[0]);
   }
 
@@ -74,7 +79,9 @@ class _ScanImageScreenState extends State<ScanImageScreen> {
               children: [
                 if (!_isLoading)
                   GestureDetector(
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.of(context).pop();
+                    },
                     child: const Icon(
                       Icons.arrow_back,
                       color: Colors.white,
@@ -148,16 +155,17 @@ class _ScanImageScreenState extends State<ScanImageScreen> {
                         if (widget.images.length - 1 > _currentImageIndex) {
                           _currentImageIndex++;
                           _currentScannedImage = null;
+                          scanCurrentImage(widget.images[_currentImageIndex]);
                         } else {
                           if (widget.isFromGallery) {
-                            //TODO show pop to add more images or not
+                            _isConfirm = true;
                           }
-                          //TODO return processed image(s)
+                          //TODO return processed image(s) or popup to add image
                         }
                       });
                     },
                     child: Text(
-                      "Suivant",
+                      _isConfirm ? "Confirmer\n($imagesNumber)" :"Suivant",
                       style: textStyle,
                     ),
                   ),

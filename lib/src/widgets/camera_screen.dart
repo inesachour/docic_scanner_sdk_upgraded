@@ -107,7 +107,7 @@ class _CameraScreenState extends State<CameraScreen> {
                       if (images.isNotEmpty) {
                         Navigator.of(context).push(MaterialPageRoute(
                             builder: (context) =>
-                                ScanImageScreen(images: images)));
+                                ScanImageScreen(images: images, isFromGallery: true,)));
                       }
                     },
                     child: const Icon(
