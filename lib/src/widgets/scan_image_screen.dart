@@ -24,23 +24,31 @@ class ScanImageScreen extends StatefulWidget {
 class _ScanImageScreenState extends State<ScanImageScreen> {
   TextStyle textStyle = const TextStyle(
       color: Colors.white, decoration: TextDecoration.none, fontSize: 14);
+
+  late bool _isLastImage;
+  late StreamSubscription sub; // Subscription for the isolate port
+  late int imagesNumber;
+
   int _currentImageIndex = 0;
   bool _isLoading = true;
-  late bool _isConfirm;
   Image? _currentScannedImage;
-  late StreamSubscription sub;
   List<Uint8List> processedImages = [];
-  late int imagesNumber;
-  final pdf = pw.Document();
+
+  final pdf = pw.Document(); //pdf document
 
   Future<Image?> scanCurrentImage(XFile image) async {
     setState(() {
       _isLoading = true;
     });
 
+    // Create a receive port from which the main isolate will receive messages from the created isolate
     final ReceivePort receivePort = ReceivePort();
+
+    // Create an isolate to process the image in an isolated environment
     await Isolate.spawn<ScanImageArguments>(scanCurrentImageIsolated,
         ScanImageArguments(image, receivePort.sendPort));
+
+    // Listen for the returned result from the created isolate
     sub = receivePort.listen((processedImageBytes) async {
       setState(() {
         _isLoading = false;
@@ -66,7 +74,7 @@ class _ScanImageScreenState extends State<ScanImageScreen> {
   void initState() {
     super.initState();
     imagesNumber = widget.isFromGallery ? widget.images.length : 0;
-    _isConfirm = (imagesNumber - 1 == _currentImageIndex);
+    _isLastImage = (imagesNumber - 1 == _currentImageIndex);
     scanCurrentImage(widget.images[0]);
   }
 
@@ -170,7 +178,7 @@ class _ScanImageScreenState extends State<ScanImageScreen> {
                         _currentScannedImage = null;
                         scanCurrentImage(widget.images[_currentImageIndex]);
                       } else if (_currentImageIndex == imagesNumber - 1) {
-                        _isConfirm = true;
+                        _isLastImage = true;
                         scanCurrentImage(widget.images[_currentImageIndex]);
                       } else {
                         //TODO SAVE PDF or SHOW IT
@@ -178,7 +186,7 @@ class _ScanImageScreenState extends State<ScanImageScreen> {
                       setState(() {});
                     },
                     child: Text(
-                      _isConfirm ? "Confirmer\n($imagesNumber)" : "Suivant",
+                      _isLastImage ? "Confirmer\n($imagesNumber)" : "Suivant",
                       style: textStyle,
                       textAlign: TextAlign.center,
                     ),
@@ -199,8 +207,12 @@ class ScanImageArguments {
   ScanImageArguments(this.image, this.sendPort);
 }
 
+// Function that will be executing in the created isolate
 void scanCurrentImageIsolated(ScanImageArguments args) {
+  // Allocate memory for the encoded output image
   Pointer<Pointer<Uint8>> encodedOutputImage = malloc.allocate(8);
+
+  // Call the C++ function to scan the image and obtain the length of the encoded image
   int encodedImageLength = scanImage(args.image.path, encodedOutputImage);
 
   if (encodedImageLength == 0) {
@@ -208,11 +220,13 @@ void scanCurrentImageIsolated(ScanImageArguments args) {
     return;
   }
 
+  // Retrieve the pointer to the encoded image
   Pointer<Uint8> cppPointer = encodedOutputImage[0];
   Uint8List encodedImageBytes = cppPointer.asTypedList(encodedImageLength);
 
   malloc.free(cppPointer);
   malloc.free(encodedOutputImage);
 
+  // Send the encoded image bytes to the send port
   args.sendPort.send(encodedImageBytes);
 }
