@@ -45,107 +45,109 @@ class _CameraScreenState extends State<CameraScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (_cameraController == null ||
-        !(_cameraController!.value.isInitialized)) {
-      return const Center(
-        child: SizedBox(
-          height: 100,
-          width: 100,
-          child: CircularProgressIndicator(
-            color: Colors.grey,
-          ),
-        ),
-      );
-    }
-    return Column(
-      children: [
-        Expanded(
-          child: Container(
-            padding: EdgeInsets.only(top: 25.0),
-            color: Colors.black,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _isFlashOn = !_isFlashOn;
-                      if (_isFlashOn) {
-                        _cameraController!.setFlashMode(FlashMode.torch);
-                      } else {
-                        _cameraController!.setFlashMode(FlashMode.off);
-                      }
-                    });
-                  },
-                  child: Icon(
-                    _isFlashOn ? Icons.flash_on : Icons.flash_off,
-                    color: Colors.white,
-                  ),
+    return Scaffold(
+      body: _cameraController == null ||
+              !(_cameraController!.value.isInitialized)
+          ? const Center(
+              child: SizedBox(
+                height: 100,
+                width: 100,
+                child: CircularProgressIndicator(
+                  color: Colors.grey,
                 ),
-              ],
-            ),
-          ),
-        ),
-        Expanded(
-          flex: 8,
-          child: AspectRatio(
-            aspectRatio: _cameraController!.value.aspectRatio,
-            child: CameraPreview(_cameraController!),
-          ),
-        ),
-        Expanded(
-          child: Container(
-            color: Colors.black,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.center,
+              ),
+            )
+          : Column(
               children: [
                 Expanded(
-                  child: GestureDetector(
-                    onTap: () async {
-                      final images = await pickImagesFromGallery();
-                      if (images.isNotEmpty) {
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => ScanImageScreen(
-                                  images: images,
-                                  isFromGallery: true,
-                                )));
-                      }
-                    },
-                    child: const Icon(
-                      Icons.photo,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: GestureDetector(
-                    onTap: () {
-                      //showDialog(barrierDismissible: false ,context: context, builder: (context) => AddPagePopup());
-                    },
-                    child: Container(
-                      margin: const EdgeInsets.all(6.0),
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: _images.isEmpty
-                      ? Container()
-                      : Text(
-                          "Confirmer \n(${_images.length})",
-                          style: textStyle,
-                          textAlign: TextAlign.center,
+                  child: Container(
+                    padding: const EdgeInsets.only(top: 25.0),
+                    color: Colors.black,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _isFlashOn = !_isFlashOn;
+                              if (_isFlashOn) {
+                                _cameraController!
+                                    .setFlashMode(FlashMode.torch);
+                              } else {
+                                _cameraController!.setFlashMode(FlashMode.off);
+                              }
+                            });
+                          },
+                          child: Icon(
+                            _isFlashOn ? Icons.flash_on : Icons.flash_off,
+                            color: Colors.white,
+                          ),
                         ),
+                      ],
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 8,
+                  child: AspectRatio(
+                    aspectRatio: _cameraController!.value.aspectRatio,
+                    child: CameraPreview(_cameraController!),
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                    color: Colors.black,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () async {
+                              final images = await pickImagesFromGallery();
+                              if (images.isNotEmpty) {
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) => ScanImageScreen(
+                                          images: images,
+                                          isFromGallery: true,
+                                        )));
+                              }
+                            },
+                            child: const Icon(
+                              Icons.photo,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              //showDialog(barrierDismissible: false ,context: context, builder: (context) => AddPagePopup());
+                            },
+                            child: Container(
+                              margin: const EdgeInsets.all(6.0),
+                              decoration: const BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: _images.isEmpty
+                              ? Container()
+                              : Text(
+                                  "Confirmer \n(${_images.length})",
+                                  style: textStyle,
+                                  textAlign: TextAlign.center,
+                                ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ],
             ),
-          ),
-        ),
-      ],
     );
   }
 

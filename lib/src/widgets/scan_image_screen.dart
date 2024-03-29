@@ -65,6 +65,10 @@ class _ScanImageScreenState extends State<ScanImageScreen> {
         processedImageBytes =
             await widget.images[_currentImageIndex].readAsBytes();
         //TODO : show snackbar or smthg to tell that no document was detected
+        /*ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text("Aucun document n'a été detecté"),
+          backgroundColor: Colors.red,
+        ));*/
       }
 
       processedImages.add(processedImageBytes);
@@ -99,125 +103,128 @@ class _ScanImageScreenState extends State<ScanImageScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Expanded(
-          child: Container(
-            color: Colors.black,
-            padding: const EdgeInsets.only(left: 15.0, right: 15.0, top: 25.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Scaffold(
+      body: Column(
+        children: [
+          Expanded(
+            child: Container(
+              color: Colors.black,
+              padding:
+                  const EdgeInsets.only(left: 15.0, right: 15.0, top: 25.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  if (!_isLoading)
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Icon(
+                        Icons.arrow_back,
+                        color: Colors.white,
+                      ),
+                    ),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () {},
+                      child: Text(
+                        "Page ${_currentImageIndex + 1}",
+                        style: textStyle,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 6,
+            child: Stack(
+              alignment: Alignment.center,
               children: [
-                if (!_isLoading)
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: const Icon(
-                      Icons.arrow_back,
-                      color: Colors.white,
+                _currentScannedImage == null
+                    ? Image.file(
+                        File(widget.images[_currentImageIndex].path),
+                        fit: BoxFit.fitHeight,
+                      )
+                    : _currentScannedImage!,
+                if (_isLoading)
+                  const Center(
+                    child: SizedBox(
+                      height: 100,
+                      width: 100,
+                      child: CircularProgressIndicator(
+                        color: Color(0xff808080),
+                        strokeWidth: 7,
+                      ),
                     ),
                   ),
-                Expanded(
-                  child: GestureDetector(
-                    onTap: () {},
-                    child: Text(
-                      "Page ${_currentImageIndex + 1}",
-                      style: textStyle,
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ),
               ],
             ),
           ),
-        ),
-        Expanded(
-          flex: 6,
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              _currentScannedImage == null
-                  ? Image.file(
-                      File(widget.images[_currentImageIndex].path),
-                      fit: BoxFit.fitHeight,
-                    )
-                  : _currentScannedImage!,
-              if (_isLoading)
-                const Center(
-                  child: SizedBox(
-                    height: 100,
-                    width: 100,
-                    child: CircularProgressIndicator(
-                      color: Color(0xff808080),
-                      strokeWidth: 7,
+          Expanded(
+            child: Container(
+              color: Colors.black,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  if (!_isLoading)
+                    GestureDetector(
+                      onTap: () {},
+                      child: const Icon(
+                        Icons.crop,
+                        color: Colors.white,
+                      ),
                     ),
-                  ),
-                ),
-            ],
-          ),
-        ),
-        Expanded(
-          child: Container(
-            color: Colors.black,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                if (!_isLoading)
-                  GestureDetector(
-                    onTap: () {},
-                    child: const Icon(
-                      Icons.crop,
-                      color: Colors.white,
+                  if (!_isLoading)
+                    GestureDetector(
+                      onTap: () {},
+                      child: const Icon(
+                        Icons.rotate_right,
+                        color: Colors.white,
+                      ),
                     ),
-                  ),
-                if (!_isLoading)
-                  GestureDetector(
-                    onTap: () {},
-                    child: const Icon(
-                      Icons.rotate_right,
-                      color: Colors.white,
-                    ),
-                  ),
-                if (!_isLoading)
-                  GestureDetector(
-                    onTap: () async {
-                      _currentImageIndex++;
+                  if (!_isLoading)
+                    GestureDetector(
+                      onTap: () async {
+                        _currentImageIndex++;
 
-                      if (_currentImageIndex < imagesNumber - 1) {
-                        _currentScannedImage = null;
-                        scanCurrentImage(widget.images[_currentImageIndex]);
-                      } else if (_currentImageIndex == imagesNumber - 1) {
-                        _isLastImage = true;
-                        scanCurrentImage(widget.images[_currentImageIndex]);
-                      } else {
-                        //TODO SAVE PDF or SHOW IT for confirmation
-                        String directory = "/storage/emulated/0/Download/";
-                        bool dirDownloadExists =
-                            await Directory(directory).exists();
-                        if (dirDownloadExists) {
-                          directory = "/storage/emulated/0/Download";
+                        if (_currentImageIndex < imagesNumber - 1) {
+                          _currentScannedImage = null;
+                          scanCurrentImage(widget.images[_currentImageIndex]);
+                        } else if (_currentImageIndex == imagesNumber - 1) {
+                          _isLastImage = true;
+                          scanCurrentImage(widget.images[_currentImageIndex]);
                         } else {
-                          directory = "/storage/emulated/0/Downloads";
+                          //TODO SAVE PDF or SHOW IT for confirmation
+                          String directory = "/storage/emulated/0/Download/";
+                          bool dirDownloadExists =
+                              await Directory(directory).exists();
+                          if (dirDownloadExists) {
+                            directory = "/storage/emulated/0/Download";
+                          } else {
+                            directory = "/storage/emulated/0/Downloads";
+                          }
+                          final file = File("$directory/example.pdf");
+                          debugPrint(file.path);
+                          await file.writeAsBytes(await pdf.save());
                         }
-                        final file = File("$directory/example.pdf");
-                        debugPrint(file.path);
-                        await file.writeAsBytes(await pdf.save());
-                      }
-                      setState(() {});
-                    },
-                    child: Text(
-                      _isLastImage ? "Confirmer\n($imagesNumber)" : "Suivant",
-                      style: textStyle,
-                      textAlign: TextAlign.center,
+                        setState(() {});
+                      },
+                      child: Text(
+                        _isLastImage ? "Confirmer\n($imagesNumber)" : "Suivant",
+                        style: textStyle,
+                        textAlign: TextAlign.center,
+                      ),
                     ),
-                  ),
-              ],
+                ],
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
