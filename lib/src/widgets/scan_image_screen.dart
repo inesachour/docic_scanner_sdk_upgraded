@@ -51,32 +51,30 @@ class _ScanImageScreenState extends State<ScanImageScreen> {
     // Listen for the returned result from the created isolate
     sub = receivePort.listen((processedImageBytes) async {
       _isLoading = false;
+
       if (processedImageBytes != null) {
         _currentScannedImage = Image.memory(
           processedImageBytes,
           fit: BoxFit.fitHeight,
         );
-        processedImages.add(processedImageBytes);
-        pdf.addPage(pw.Page(build: (pw.Context context) {
-          return pw.Center(
-            child: pw.Image(pw.MemoryImage(processedImageBytes)),
-          ); // Center
-        }));
       } else {
-        //TODO : show snackbar or smthg to tell that no document was detected
         _currentScannedImage = Image.file(
           File(widget.images[_currentImageIndex].path),
           fit: BoxFit.fitHeight,
         );
-        Uint8List imageBytes =
+        processedImageBytes =
             await widget.images[_currentImageIndex].readAsBytes();
-        processedImages.add(imageBytes);
-        pdf.addPage(pw.Page(build: (pw.Context context) {
-          return pw.Center(
-            child: pw.Image(pw.MemoryImage(imageBytes)),
-          ); // Center
-        }));
+        //TODO : show snackbar or smthg to tell that no document was detected
       }
+
+      processedImages.add(processedImageBytes);
+      pdf.addPage(pw.Page(build: (pw.Context context) {
+        return pw.FullPage(
+          ignoreMargins: true,
+          child: pw.Image(pw.MemoryImage(processedImageBytes),
+              fit: pw.BoxFit.fitHeight),
+        );
+      }));
       setState(() {});
     });
 
@@ -194,7 +192,18 @@ class _ScanImageScreenState extends State<ScanImageScreen> {
                         _isLastImage = true;
                         scanCurrentImage(widget.images[_currentImageIndex]);
                       } else {
-                        //TODO SAVE PDF or SHOW IT
+                        //TODO SAVE PDF or SHOW IT for confirmation
+                        String directory = "/storage/emulated/0/Download/";
+                        bool dirDownloadExists =
+                            await Directory(directory).exists();
+                        if (dirDownloadExists) {
+                          directory = "/storage/emulated/0/Download";
+                        } else {
+                          directory = "/storage/emulated/0/Downloads";
+                        }
+                        final file = File("$directory/example.pdf");
+                        debugPrint(file.path);
+                        await file.writeAsBytes(await pdf.save());
                       }
                       setState(() {});
                     },
