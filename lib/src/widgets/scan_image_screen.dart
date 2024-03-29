@@ -65,10 +65,11 @@ class _ScanImageScreenState extends State<ScanImageScreen> {
         processedImageBytes =
             await widget.images[_currentImageIndex].readAsBytes();
         //TODO : show snackbar or smthg to tell that no document was detected
-        /*ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text("Aucun document n'a été detecté"),
-          backgroundColor: Colors.red,
-        ));*/
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text("Aucun document n'a été détecté"),
+          backgroundColor: Color(0xffff0f0f),
+          elevation: 10.0,
+        ));
       }
 
       processedImages.add(processedImageBytes);
