@@ -31,12 +31,11 @@ class _ScanImageScreenState extends State<ScanImageScreen> {
 
   int _currentImageIndex = 0;
   bool _isLoading = true;
-  Image? _currentScannedImage;
   List<Uint8List> processedImages = [];
 
   final pdf = pw.Document(); //pdf document
 
-  Future<Image?> scanCurrentImage(XFile image) async {
+  Future<void> scanCurrentImage(XFile image) async {
     setState(() {
       _isLoading = true;
     });
@@ -52,19 +51,8 @@ class _ScanImageScreenState extends State<ScanImageScreen> {
     sub = receivePort.listen((processedImageBytes) async {
       _isLoading = false;
 
-      if (processedImageBytes != null) {
-        _currentScannedImage = Image.memory(
-          processedImageBytes,
-          fit: BoxFit.fitHeight,
-        );
-      } else {
-        _currentScannedImage = Image.file(
-          File(widget.images[_currentImageIndex].path),
-          fit: BoxFit.fitHeight,
-        );
-        processedImageBytes =
-            await widget.images[_currentImageIndex].readAsBytes();
-        //TODO : show snackbar or smthg to tell that no document was detected
+      if (processedImageBytes == null) {
+        processedImageBytes = await widget.images[_currentImageIndex].readAsBytes();
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text("Aucun document n'a été détecté"),
           backgroundColor: Color(0xffff0f0f),
@@ -82,8 +70,6 @@ class _ScanImageScreenState extends State<ScanImageScreen> {
       }));
       setState(() {});
     });
-
-    return _currentScannedImage;
   }
 
   @override
@@ -144,12 +130,12 @@ class _ScanImageScreenState extends State<ScanImageScreen> {
             child: Stack(
               alignment: Alignment.center,
               children: [
-                _currentScannedImage == null
+                _currentImageIndex >= processedImages.length
                     ? Image.file(
                         File(widget.images[_currentImageIndex].path),
                         fit: BoxFit.fitHeight,
                       )
-                    : _currentScannedImage!,
+                    : Image.memory( processedImages[_currentImageIndex], fit: BoxFit.fitHeight,),
                 if (_isLoading)
                   const Center(
                     child: SizedBox(
@@ -193,11 +179,12 @@ class _ScanImageScreenState extends State<ScanImageScreen> {
                         _currentImageIndex++;
 
                         if (_currentImageIndex < imagesNumber - 1) {
-                          _currentScannedImage = null;
                           scanCurrentImage(widget.images[_currentImageIndex]);
+                          setState(() {});
                         } else if (_currentImageIndex == imagesNumber - 1) {
                           _isLastImage = true;
                           scanCurrentImage(widget.images[_currentImageIndex]);
+                          setState(() {});
                         } else {
                           //TODO SAVE PDF or SHOW IT for confirmation
                           String directory = "/storage/emulated/0/Download/";
@@ -209,10 +196,9 @@ class _ScanImageScreenState extends State<ScanImageScreen> {
                             directory = "/storage/emulated/0/Downloads";
                           }
                           final file = File("$directory/example.pdf");
-                          debugPrint(file.path);
                           await file.writeAsBytes(await pdf.save());
+                          Navigator.pop(context);
                         }
-                        setState(() {});
                       },
                       child: Text(
                         _isLastImage ? "Confirmer\n($imagesNumber)" : "Suivant",
