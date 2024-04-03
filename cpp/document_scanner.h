@@ -8,6 +8,20 @@
 using namespace cv;
 using namespace std;
 
+struct Coordinate
+{
+    double x;
+    double y;
+};
+
+struct DetectedCorners
+{
+    Coordinate topLeft;
+    Coordinate topRight;
+    Coordinate bottomLeft;
+    Coordinate bottomRight;
+};
+
 class DocumentScanner {
 private:
     static int detectedDocumentFrames;
@@ -19,6 +33,8 @@ public:
     static vector<Point> orderPoints(const vector<Point>& points);
     static Mat fillArea(const Mat& image, const vector<Point>& corners, const Scalar& fillColor, const double transparency);
     static Mat transformAndCropImage(const Mat& image, const vector<Point>& orderedCorners);
-    static pair<Mat, bool> scanFrame(const Mat& image);
+    static struct Coordinate createCoordinate(double x, double y);
+    static struct DetectedCorners createDetectedCorners(Coordinate topLeft, Coordinate topRight, Coordinate bottomLeft, Coordinate bottomRight);
+    static struct DetectedCorners scanFrame(uchar* buf, uint* size);
     static int scanImage(char* path, uchar** encodedOutput);
 };

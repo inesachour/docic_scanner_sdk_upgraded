@@ -12,4 +12,11 @@ extern "C" {
         DocumentScanner documentScanner = DocumentScanner();
         return documentScanner.scanImage(path, encodedOutput);
     }
+
+    __attribute__((visibility("default"))) __attribute__((used))
+    struct DetectedCorners scanFromLiveCamera(uchar* buf, uint* size) {
+        DocumentScanner documentScanner = DocumentScanner();
+        return documentScanner.scanFrame(buf, size);
+    }
+
 }

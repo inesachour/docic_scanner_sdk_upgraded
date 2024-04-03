@@ -1,5 +1,9 @@
+import 'dart:ffi' as ffi;
+
 import 'package:camera/camera.dart';
+import 'package:document_scanner_ocr/src/docic_mobile_sdk.dart';
 import 'package:document_scanner_ocr/src/widgets/scan_image_screen.dart';
+import 'package:ffi/ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -15,6 +19,7 @@ class _CameraScreenState extends State<CameraScreen> {
   late List<CameraDescription> _cameras;
   bool _isFlashOn = false;
   List<Image> _images = [];
+  DetectedCorners? _detectedCorners;
 
   TextStyle textStyle = const TextStyle(color: Colors.white);
 
@@ -39,6 +44,20 @@ class _CameraScreenState extends State<CameraScreen> {
           return;
         }
         setState(() {});
+        _cameraController!.startImageStream((image) async {
+          ffi.Pointer<ffi.Uint32> s = malloc.allocate(1);
+          s[0] = image.planes[0].bytes.length;
+          ffi.Pointer<ffi.Uint8> p = malloc.allocate(3 * image.height * image.width);
+          p.asTypedList(s[0]).setRange(0, s[0], image.planes[0].bytes);
+          DetectedCorners detectedCorners = scanFrame(p, s);
+          debugPrint(detectedCorners.topLeft.dx.toString());
+          setState(() {
+            _detectedCorners = detectedCorners;
+          });
+
+          malloc.free(p);
+          malloc.free(s);
+        });
       });
     });
   }
@@ -91,7 +110,17 @@ class _CameraScreenState extends State<CameraScreen> {
                   flex: 8,
                   child: AspectRatio(
                     aspectRatio: _cameraController!.value.aspectRatio,
-                    child: CameraPreview(_cameraController!),
+                    child: Stack(
+                      alignment: Alignment.center,
+                      fit: StackFit.expand,
+                      children: [
+                        CameraPreview(_cameraController!),
+                        if (_detectedCorners != null) CustomPaint(
+                          painter: ContoursPainter(detectedCorners: _detectedCorners!),
+                          size: Size.infinite,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 Expanded(
@@ -153,7 +182,37 @@ class _CameraScreenState extends State<CameraScreen> {
 
   @override
   void dispose() {
+    _cameraController?.stopImageStream();
     _cameraController?.dispose();
     super.dispose();
+  }
+}
+
+class ContoursPainter extends CustomPainter {
+  final DetectedCorners detectedCorners;
+
+  ContoursPainter({required this.detectedCorners});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.red
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.0;
+
+    final path = Path();
+
+    path.moveTo(detectedCorners.topLeft.dx, detectedCorners.topLeft.dy);
+    path.lineTo(detectedCorners.topRight.dx, detectedCorners.topRight.dy);
+    path.lineTo(detectedCorners.bottomRight.dx, detectedCorners.bottomRight.dy);
+    path.lineTo(detectedCorners.bottomLeft.dx, detectedCorners.bottomLeft.dy);
+    path.close();
+
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
   }
 }
