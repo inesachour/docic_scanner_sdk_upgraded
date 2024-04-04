@@ -200,6 +200,7 @@ DetectedCorners DocumentScanner::createDetectedCorners(Coordinate topLeft, Coord
     return detectedCorners;
 }
 
+// Function to scan a single frame and return the detected corners
 DetectedCorners DocumentScanner::scanFrame(uchar* buf, uint* size)
 {
     vector <uchar> v(buf, buf + size[0]);
@@ -226,32 +227,6 @@ DetectedCorners DocumentScanner::scanFrame(uchar* buf, uint* size)
             createCoordinate((double)orderedCorners[3].x, (double)orderedCorners[3].y)
     );
 }
-
-/*// Function to scan a single frame and determine if it contains a document
-pair<Mat, bool> DocumentScanner::scanFrame(const Mat& image)
-{
-	Mat processedImage = image.clone();
-	Mat filledImage = image.clone();;
-	processedImage = preprocessImage(processedImage);
-	vector<vector<Point>> contours = detectContour(processedImage);
-	vector<Point> orderedCorners = findCorners(contours);
-
-	// If no corners are found, reset the detected frame counter
-	if (orderedCorners.empty()) {
-		DocumentScanner::detectedDocumentFrames = 0;
-		return make_pair(image, false);
-	}
-	// If the document has been detected less than 7 times, fill the area
-	else if (DocumentScanner::detectedDocumentFrames < 7) {
-		DocumentScanner::detectedDocumentFrames++;
-		filledImage = fillArea(image, orderedCorners, Scalar(128, 0, 0), 0.4);
-		return make_pair(filledImage, false);
-	}
-	// If the document has been detected 7 times, transform and crop the document and return it
-	else {
-		return make_pair(transformAndCropImage(image, orderedCorners), true);
-	}
-}*/
 
 // Function to scan an entire image and return the transformed and cropped document
 int DocumentScanner::scanImage(char* path, uchar** encodedOutput)
