@@ -200,11 +200,9 @@ DetectedCorners DocumentScanner::createDetectedCorners(Coordinate topLeft, Coord
     return detectedCorners;
 }
 
-// Function to scan a single frame and return the detected corners
-DetectedCorners DocumentScanner::scanFrame(uchar* buf, uint* size)
+DetectedCorners DocumentScanner::scanFrame(char* y, char* u, char* v, int height, int width)
 {
-    vector <uchar> v(buf, buf + size[0]);
-    Mat image = imdecode(Mat(v), IMREAD_COLOR);
+    Mat image = convertYUVtoRGB(y, u, v, height, width);
 
     if (image.empty()) {
         return createDetectedCorners(createCoordinate(0,0), createCoordinate(0, 0), createCoordinate(0, 0), createCoordinate(0, 0));
@@ -226,6 +224,29 @@ DetectedCorners DocumentScanner::scanFrame(uchar* buf, uint* size)
             createCoordinate((double)orderedCorners[2].x, (double)orderedCorners[2].y),
             createCoordinate((double)orderedCorners[3].x, (double)orderedCorners[3].y)
     );
+}
+
+Mat DocumentScanner::convertYUVtoRGB(char* y, char* u, char* v, int height, int width)
+{
+    // Create Mat for each plane
+    Mat yPlane(height, width, CV_8UC1, y);
+    Mat uPlane(height / 2, width / 2, CV_8UC1, u);
+    Mat vPlane(height / 2, width / 2, CV_8UC1, v);
+
+    // Resize U and V planes to match Y plane size
+    Mat uPlaneResized, vPlaneResized;
+    resize(uPlane, uPlaneResized, yPlane.size(), 0, 0, INTER_LINEAR);
+    resize(vPlane, vPlaneResized, yPlane.size(), 0, 0, INTER_LINEAR);
+
+    // Merge Y, U, and V planes into one Mat
+    vector<Mat> yuvPlanes = { yPlane, uPlaneResized, vPlaneResized };
+    Mat yuvImage;
+    merge(yuvPlanes, yuvImage);
+
+    // Convert YUV to RGB
+    Mat rgbImage;
+    cvtColor(yuvImage, rgbImage, COLOR_YUV2BGR);
+    return rgbImage;
 }
 
 // Function to scan an entire image and return the transformed and cropped document

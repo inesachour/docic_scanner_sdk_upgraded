@@ -1,4 +1,5 @@
 import 'dart:ffi' as ffi;
+import 'dart:typed_data';
 
 import 'package:camera/camera.dart';
 import 'package:document_scanner_ocr/src/docic_mobile_sdk.dart';
@@ -45,18 +46,28 @@ class _CameraScreenState extends State<CameraScreen> {
         }
         setState(() {});
         _cameraController!.startImageStream((image) async {
-          ffi.Pointer<ffi.Uint32> s = malloc.allocate(1);
-          s[0] = image.planes[0].bytes.length;
-          ffi.Pointer<ffi.Uint8> p = malloc.allocate(3 * image.height * image.width);
-          p.asTypedList(s[0]).setRange(0, s[0], image.planes[0].bytes);
-          DetectedCorners detectedCorners = scanFrame(p, s);
+          final ffi.Pointer<ffi.Uint8> yData = malloc.allocate<ffi.Uint8>(image.planes[0].bytes.length);
+          final ffi.Pointer<ffi.Uint8> uData = malloc.allocate<ffi.Uint8>(image.planes[1].bytes.length);
+          final ffi.Pointer<ffi.Uint8> vData = malloc.allocate<ffi.Uint8>(image.planes[2].bytes.length);
+
+          final Uint8List yDatapointerList = yData.asTypedList(image.planes[0].bytes.length);
+          final Uint8List uDatapointerList = yData.asTypedList(image.planes[1].bytes.length);
+          final Uint8List vDatapointerList = yData.asTypedList(image.planes[2].bytes.length);
+
+          // Copy the Uint8List data to the allocated memory
+          yDatapointerList.setAll(0, image.planes[0].bytes);
+          uDatapointerList.setAll(0, image.planes[1].bytes);
+          vDatapointerList.setAll(0, image.planes[2].bytes);
+
+          DetectedCorners detectedCorners = scanFrame(yData, uData, vData, image.height, image.width);
           debugPrint(detectedCorners.topLeft.dx.toString());
           setState(() {
             _detectedCorners = detectedCorners;
           });
 
-          malloc.free(p);
-          malloc.free(s);
+          malloc.free(yData);
+          malloc.free(uData);
+          malloc.free(vData);
         });
       });
     });

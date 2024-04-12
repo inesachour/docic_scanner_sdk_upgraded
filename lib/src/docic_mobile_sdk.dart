@@ -53,13 +53,13 @@ class DetectedCorners {
 typedef _scan_image_func = ffi.Int32 Function(
     ffi.Pointer<Utf8> path, ffi.Pointer<ffi.Pointer<ffi.Uint8>> encodedOutput);
 typedef _scan_frame_func = NativeDetectedCorners Function(
-    ffi.Pointer<ffi.Uint8> buf, ffi.Pointer<ffi.Uint32> size);
+    ffi.Pointer<ffi.Uint8> y, ffi.Pointer<ffi.Uint8> u, ffi.Pointer<ffi.Uint8> v, ffi.Int32 height, ffi.Int32 width);
 
 // Dart function signatures
 typedef _ScanImageFunc = int Function(
     ffi.Pointer<Utf8> path, ffi.Pointer<ffi.Pointer<ffi.Uint8>> encodedOutput);
 typedef _ScanFrameFunc = NativeDetectedCorners Function(
-    ffi.Pointer<ffi.Uint8> buf, ffi.Pointer<ffi.Uint32> size);
+ffi.Pointer<ffi.Uint8> y, ffi.Pointer<ffi.Uint8> u, ffi.Pointer<ffi.Uint8> v, int height, int width);
 
 // Getting the library
 ffi.DynamicLibrary _lib = Platform.isAndroid
@@ -76,8 +76,8 @@ int scanImage(String path, ffi.Pointer<ffi.Pointer<ffi.Uint8>> encodedOutput) {
   return _scanImage(path.toNativeUtf8(), encodedOutput);
 }
 
-DetectedCorners scanFrame(ffi.Pointer<ffi.Uint8> buf, ffi.Pointer<ffi.Uint32> size){
-  NativeDetectedCorners nativeDetectedCorners = _scanFrame(buf, size);
+DetectedCorners scanFrame(ffi.Pointer<ffi.Uint8> y, ffi.Pointer<ffi.Uint8> u, ffi.Pointer<ffi.Uint8> v, int height, int width){
+  NativeDetectedCorners nativeDetectedCorners = _scanFrame(y, u, v, height, width);
   return DetectedCorners(
     topLeft: Offset(nativeDetectedCorners.topLeft.x, nativeDetectedCorners.topLeft.y),
     topRight: Offset(nativeDetectedCorners.topRight.x, nativeDetectedCorners.topRight.y),

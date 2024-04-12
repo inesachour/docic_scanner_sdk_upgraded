@@ -35,6 +35,7 @@ public:
     static Mat transformAndCropImage(const Mat& image, const vector<Point>& orderedCorners);
     static struct Coordinate createCoordinate(double x, double y);
     static struct DetectedCorners createDetectedCorners(Coordinate topLeft, Coordinate topRight, Coordinate bottomLeft, Coordinate bottomRight);
-    static struct DetectedCorners scanFrame(uchar* buf, uint* size);
+    static struct DetectedCorners scanFrame(char* y, char* u, char* v, int height, int width);
+    static Mat convertYUVtoRGB(char* y, char* u, char* v, int height, int width);
     static int scanImage(char* path, uchar** encodedOutput);
 };
