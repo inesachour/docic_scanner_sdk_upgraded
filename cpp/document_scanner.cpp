@@ -247,7 +247,7 @@ Mat DocumentScanner::convertYUVtoRGB(char* y, char* u, char* v, int height, int 
 
     // Convert YUV to RGB
     Mat rgbImage;
-    cvtColor(yuvImage, rgbImage, COLOR_YUV2RGB);
+    cvtColor(yuvImage, rgbImage, COLOR_YUV2BGR);
     return rgbImage;
 }
 
