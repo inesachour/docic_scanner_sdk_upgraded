@@ -213,11 +213,12 @@ DetectedCorners DocumentScanner::scanFrame(char* y, char* u, char* v, int height
 
     image = preprocessImage(image);
     vector<vector<Point>> contours = detectContour(image);
-    vector<Point> orderedCorners = findCorners(contours);
 
-    if (orderedCorners.empty()) {
+    if (contours.empty()) {
         return createDetectedCorners(createCoordinate(0, 0), createCoordinate(0, 0), createCoordinate(0, 0), createCoordinate(0, 0));
     }
+
+    vector<Point> orderedCorners = findCorners(contours);
 
     return createDetectedCorners(
             createCoordinate((double)orderedCorners[0].x, (double)orderedCorners[0].y),
