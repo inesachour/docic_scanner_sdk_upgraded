@@ -215,7 +215,7 @@ DetectedCorners DocumentScanner::scanFrame(char* y, char* u, char* v, int height
     vector<vector<Point>> contours = detectContour(image);
 
     if (contours.empty()) {
-        return createDetectedCorners(createCoordinate(0, 0), createCoordinate(0, 0), createCoordinate(0, 0), createCoordinate(0, 0));
+        return createDetectedCorners(createCoordinate(100, 0), createCoordinate(0, 0), createCoordinate(0, 0), createCoordinate(0, 0));
     }
 
     vector<Point> orderedCorners = findCorners(contours);
@@ -247,7 +247,7 @@ Mat DocumentScanner::convertYUVtoRGB(char* y, char* u, char* v, int height, int 
 
     // Convert YUV to RGB
     Mat rgbImage;
-    cvtColor(yuvImage, rgbImage, COLOR_YUV2BGR);
+    cvtColor(yuvImage, rgbImage, COLOR_YUV2RGB);
     return rgbImage;
 }
 
