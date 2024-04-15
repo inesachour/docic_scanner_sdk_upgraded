@@ -200,6 +200,7 @@ DetectedCorners DocumentScanner::createDetectedCorners(Coordinate topLeft, Coord
     return detectedCorners;
 }
 
+// Function that returns the detected corners of the document present in the camera frame
 DetectedCorners DocumentScanner::scanFrame(char* y, char* u, char* v, int height, int width)
 {
     Mat image = convertYUVtoRGB(y, u, v, height, width);
