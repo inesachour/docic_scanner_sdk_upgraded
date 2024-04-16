@@ -59,7 +59,7 @@ typedef _scan_frame_func = NativeDetectedCorners Function(
 typedef _ScanImageFunc = int Function(
     ffi.Pointer<Utf8> path, ffi.Pointer<ffi.Pointer<ffi.Uint8>> encodedOutput);
 typedef _ScanFrameFunc = NativeDetectedCorners Function(
-ffi.Pointer<ffi.Uint8> y, ffi.Pointer<ffi.Uint8> u, ffi.Pointer<ffi.Uint8> v, int height, int width);
+    ffi.Pointer<ffi.Uint8> y, ffi.Pointer<ffi.Uint8> u, ffi.Pointer<ffi.Uint8> v, int height, int width);
 
 // Getting the library
 ffi.DynamicLibrary _lib = Platform.isAndroid
