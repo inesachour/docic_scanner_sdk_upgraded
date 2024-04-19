@@ -45,29 +45,33 @@ class _CameraScreenState extends State<CameraScreen> {
           return;
         }
         setState(() {});
+        int i=0;
         _cameraController!.startImageStream((image) async {
-          final ffi.Pointer<ffi.Uint8> yData = malloc.allocate<ffi.Uint8>(image.planes[0].bytes.length);
-          final ffi.Pointer<ffi.Uint8> uData = malloc.allocate<ffi.Uint8>(image.planes[1].bytes.length);
-          final ffi.Pointer<ffi.Uint8> vData = malloc.allocate<ffi.Uint8>(image.planes[2].bytes.length);
+          i++;
+          i = i%5;
+          if(i == 0){
+            final ffi.Pointer<ffi.Uint8> yData = malloc.allocate<ffi.Uint8>(image.planes[0].bytes.length);
+            final ffi.Pointer<ffi.Uint8> uData = malloc.allocate<ffi.Uint8>(image.planes[1].bytes.length);
+            final ffi.Pointer<ffi.Uint8> vData = malloc.allocate<ffi.Uint8>(image.planes[2].bytes.length);
 
-          final Uint8List yDatapointerList = yData.asTypedList(image.planes[0].bytes.length);
-          final Uint8List uDatapointerList = uData.asTypedList(image.planes[1].bytes.length);
-          final Uint8List vDatapointerList = vData.asTypedList(image.planes[2].bytes.length);
+            final Uint8List yDatapointerList = yData.asTypedList(image.planes[0].bytes.length);
+            final Uint8List uDatapointerList = uData.asTypedList(image.planes[1].bytes.length);
+            final Uint8List vDatapointerList = vData.asTypedList(image.planes[2].bytes.length);
 
-          // Copy the Uint8List data to the allocated memory
-          yDatapointerList.setAll(0, image.planes[0].bytes);
-          uDatapointerList.setAll(0, image.planes[1].bytes);
-          vDatapointerList.setAll(0, image.planes[2].bytes);
+            // Copy the Uint8List data to the allocated memory
+            yDatapointerList.setAll(0, image.planes[0].bytes);
+            uDatapointerList.setAll(0, image.planes[1].bytes);
+            vDatapointerList.setAll(0, image.planes[2].bytes);
 
-          DetectedCorners detectedCorners = scanFrame(yData, uData, vData, image.height, image.width);
-          debugPrint("${detectedCorners.topLeft.dx.toString()} ${detectedCorners.topLeft.dy.toString()}");
-          setState(() {
-            _detectedCorners = detectedCorners;
-          });
+            DetectedCorners detectedCorners = scanFrame(yData, uData, vData, image.height, image.planes[0].bytesPerRow, image.planes[1].bytesPerRow, image.planes[1].bytesPerPixel ?? 0);
+            setState(() {
+              _detectedCorners = detectedCorners;
+            });
 
-          malloc.free(yData);
-          malloc.free(uData);
-          malloc.free(vData);
+            malloc.free(yData);
+            malloc.free(uData);
+            malloc.free(vData);
+          }
         });
       });
     });

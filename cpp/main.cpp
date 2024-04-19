@@ -14,9 +14,9 @@ extern "C" {
     }
 
     __attribute__((visibility("default"))) __attribute__((used))
-    struct DetectedCorners scanFromLiveCamera(char* y, char* u, char* v, int height, int width) {
+    struct DetectedCorners scanFromLiveCamera(uint8_t* y, uint8_t* u, uint8_t* v, int height, int width, int bytesPerRow, int bytesPerPixel) {
         DocumentScanner documentScanner = DocumentScanner();
-        return documentScanner.scanFrame(y, u, v, height, width);
+        return documentScanner.scanFrame(y, u, v, height, width, bytesPerRow, bytesPerPixel);
     }
 
 }
