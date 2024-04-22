@@ -129,7 +129,13 @@ class _CameraScreenState extends State<CameraScreen> {
                       alignment: Alignment.center,
                       fit: StackFit.expand,
                       children: [
-                        CameraPreview(_cameraController!),
+                        Container(
+                          child: FractionallySizedBox(
+                            widthFactor: 0.92,
+                            child: CameraPreview(_cameraController!),
+                          ),
+                          color: Colors.black,
+                        ),
                         if (_detectedCorners != null) CustomPaint(
                           painter: ContoursPainter(detectedCorners: _detectedCorners!),
                           size: Size.infinite,
