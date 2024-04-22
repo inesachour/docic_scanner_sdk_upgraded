@@ -235,7 +235,7 @@ Mat DocumentScanner::convertYUVtoRGB(uint8_t* y, uint8_t* u, uint8_t* v, int hei
     int r, g, b;
     int rt, gt, bt;
 
-    uint32_t* src = (uint32_t*)malloc(sizeof(uint32_t) * (width * height));
+    Mat image(height, width, CV_8UC3);
 
     for (int i = 0; i < width; ++i)
     {
@@ -253,11 +253,12 @@ Mat DocumentScanner::convertYUVtoRGB(uint8_t* y, uint8_t* u, uint8_t* v, int hei
             r = rt < 0 ? 0 : (rt > 255 ? 255 : rt);
             g = gt < 0 ? 0 : (gt > 255 ? 255 : gt);
             b = bt < 0 ? 0 : (bt > 255 ? 255 : bt);
-            src[i + j * width] = (0xFF << 24) | (b << 16) | (g << 8) | r;
+            image.at<Vec3b>(j, i) = Vec3b(b, g, r);
         }
     }
 
-    return Mat(height, width, CV_8UC4, src);
+    rotate(image, image, ROTATE_90_CLOCKWISE);
+    return image;
 }
 
 // Function to scan an entire image and return the transformed and cropped document
