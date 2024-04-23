@@ -52,7 +52,8 @@ class _ScanImageScreenState extends State<ScanImageScreen> {
       _isLoading = false;
 
       if (processedImageBytes == null) {
-        processedImageBytes = await widget.images[_currentImageIndex].readAsBytes();
+        processedImageBytes =
+            await widget.images[_currentImageIndex].readAsBytes();
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text("Aucun document n'a été détecté"),
           backgroundColor: Color(0xffff0f0f),
@@ -135,7 +136,10 @@ class _ScanImageScreenState extends State<ScanImageScreen> {
                         File(widget.images[_currentImageIndex].path),
                         fit: BoxFit.fitHeight,
                       )
-                    : Image.memory( processedImages[_currentImageIndex], fit: BoxFit.fitHeight,),
+                    : Image.memory(
+                        processedImages[_currentImageIndex],
+                        fit: BoxFit.fitHeight,
+                      ),
                 if (_isLoading)
                   const Center(
                     child: SizedBox(

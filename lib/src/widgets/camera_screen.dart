@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:camera/camera.dart';
 import 'package:document_scanner_ocr/src/docic_mobile_sdk.dart';
+import 'package:document_scanner_ocr/src/widgets/contours_painter.dart';
 import 'package:document_scanner_ocr/src/widgets/scan_image_screen.dart';
 import 'package:ffi/ffi.dart';
 import 'package:flutter/material.dart';
@@ -45,25 +46,38 @@ class _CameraScreenState extends State<CameraScreen> {
           return;
         }
         setState(() {});
-        int i=0;
+        int i = 0;
         _cameraController!.startImageStream((image) async {
           i++;
-          i = i%5;
-          if(i == 0){
-            final ffi.Pointer<ffi.Uint8> yData = malloc.allocate<ffi.Uint8>(image.planes[0].bytes.length);
-            final ffi.Pointer<ffi.Uint8> uData = malloc.allocate<ffi.Uint8>(image.planes[1].bytes.length);
-            final ffi.Pointer<ffi.Uint8> vData = malloc.allocate<ffi.Uint8>(image.planes[2].bytes.length);
+          i = i % 5;
+          if (i == 0) {
+            final ffi.Pointer<ffi.Uint8> yData =
+                malloc.allocate<ffi.Uint8>(image.planes[0].bytes.length);
+            final ffi.Pointer<ffi.Uint8> uData =
+                malloc.allocate<ffi.Uint8>(image.planes[1].bytes.length);
+            final ffi.Pointer<ffi.Uint8> vData =
+                malloc.allocate<ffi.Uint8>(image.planes[2].bytes.length);
 
-            final Uint8List yDatapointerList = yData.asTypedList(image.planes[0].bytes.length);
-            final Uint8List uDatapointerList = uData.asTypedList(image.planes[1].bytes.length);
-            final Uint8List vDatapointerList = vData.asTypedList(image.planes[2].bytes.length);
+            final Uint8List yDatapointerList =
+                yData.asTypedList(image.planes[0].bytes.length);
+            final Uint8List uDatapointerList =
+                uData.asTypedList(image.planes[1].bytes.length);
+            final Uint8List vDatapointerList =
+                vData.asTypedList(image.planes[2].bytes.length);
 
             // Copy the Uint8List data to the allocated memory
             yDatapointerList.setAll(0, image.planes[0].bytes);
             uDatapointerList.setAll(0, image.planes[1].bytes);
             vDatapointerList.setAll(0, image.planes[2].bytes);
 
-            DetectedCorners detectedCorners = scanFrame(yData, uData, vData, image.height, image.planes[0].bytesPerRow, image.planes[1].bytesPerRow, image.planes[1].bytesPerPixel ?? 0);
+            DetectedCorners detectedCorners = scanFrame(
+                yData,
+                uData,
+                vData,
+                image.height,
+                image.planes[0].bytesPerRow,
+                image.planes[1].bytesPerRow,
+                image.planes[1].bytesPerPixel ?? 0);
             setState(() {
               _detectedCorners = detectedCorners;
             });
@@ -136,10 +150,12 @@ class _CameraScreenState extends State<CameraScreen> {
                           ),
                           color: Colors.black,
                         ),
-                        if (_detectedCorners != null) CustomPaint(
-                          painter: ContoursPainter(detectedCorners: _detectedCorners!),
-                          size: Size.infinite,
-                        ),
+                        if (_detectedCorners != null)
+                          CustomPaint(
+                            painter: ContoursPainter(
+                                detectedCorners: _detectedCorners!),
+                            size: Size.infinite,
+                          ),
                       ],
                     ),
                   ),
@@ -206,34 +222,5 @@ class _CameraScreenState extends State<CameraScreen> {
     _cameraController?.stopImageStream();
     _cameraController?.dispose();
     super.dispose();
-  }
-}
-
-class ContoursPainter extends CustomPainter {
-  final DetectedCorners detectedCorners;
-
-  ContoursPainter({required this.detectedCorners});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.red
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2.0;
-
-    final path = Path();
-
-    path.moveTo(detectedCorners.topLeft.dx, detectedCorners.topLeft.dy);
-    path.lineTo(detectedCorners.topRight.dx, detectedCorners.topRight.dy);
-    path.lineTo(detectedCorners.bottomRight.dx, detectedCorners.bottomRight.dy);
-    path.lineTo(detectedCorners.bottomLeft.dx, detectedCorners.bottomLeft.dy);
-    path.close();
-
-    canvas.drawPath(path, paint);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return true;
   }
 }
