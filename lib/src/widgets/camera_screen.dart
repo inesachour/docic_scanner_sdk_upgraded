@@ -48,11 +48,10 @@ class _CameraScreenState extends State<CameraScreen> {
           return;
         }
         setState(() {});
-        int i = 0;
+        int skipFrame = 0;
         _cameraController!.startImageStream((image) async {
-          i++;
-          i = i % 5;
-          if (i == 0) {
+          skipFrame = (skipFrame + 1) % 5;
+          if (skipFrame == 0) {
             final ffi.Pointer<ffi.Uint8> yData =
                 malloc.allocate<ffi.Uint8>(image.planes[0].bytes.length);
             final ffi.Pointer<ffi.Uint8> uData =
@@ -72,7 +71,8 @@ class _CameraScreenState extends State<CameraScreen> {
             uDatapointerList.setAll(0, image.planes[1].bytes);
             vDatapointerList.setAll(0, image.planes[2].bytes);
 
-            ffi.Pointer<ffi.Pointer<ffi.Uint8>> encodedOutputImage = malloc.allocate(8);
+            ffi.Pointer<ffi.Pointer<ffi.Uint8>> encodedOutputImage =
+                malloc.allocate(8);
 
             ScanFrameResult scanFrameResult = scanFrame(
                 yData,
@@ -83,8 +83,7 @@ class _CameraScreenState extends State<CameraScreen> {
                 image.planes[1].bytesPerRow,
                 image.planes[1].bytesPerPixel ?? 0,
                 _detectedCorners != null && !_detectedCorners!.isEmpty(),
-                encodedOutputImage
-            );
+                encodedOutputImage);
 
             setState(() {
               _detectedCorners = scanFrameResult.corners;

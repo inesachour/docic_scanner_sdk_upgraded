@@ -56,7 +56,8 @@ final class NativeScanFrameResult extends ffi.Struct {
   @ffi.Int32()
   external int outputBufferSize;
 
-  factory NativeScanFrameResult.allocate(NativeDetectedCorners corners, int outputBufferSize) =>
+  factory NativeScanFrameResult.allocate(
+          NativeDetectedCorners corners, int outputBufferSize) =>
       calloc<NativeScanFrameResult>().ref
         ..corners = corners
         ..outputBufferSize = outputBufferSize;
@@ -125,20 +126,19 @@ ScanFrameResult scanFrame(
     int bytesPerPixel,
     bool isDocumentDetected,
     ffi.Pointer<ffi.Pointer<ffi.Uint8>> encodedOutput) {
-  NativeScanFrameResult nativeScanFrameResult =
-      _scanFrame(y, u, v, height, width, bytesPerRow, bytesPerPixel, isDocumentDetected, encodedOutput);
+  NativeScanFrameResult nativeScanFrameResult = _scanFrame(y, u, v, height,
+      width, bytesPerRow, bytesPerPixel, isDocumentDetected, encodedOutput);
   DetectedCorners detectedCorners = DetectedCorners(
-    topLeft: Offset(
-        nativeScanFrameResult.corners.topLeft.x,  nativeScanFrameResult.corners.topLeft.y),
-    topRight: Offset(
-        nativeScanFrameResult.corners.topRight.x,  nativeScanFrameResult.corners.topRight.y),
-    bottomLeft: Offset(
-        nativeScanFrameResult.corners.bottomLeft.x,  nativeScanFrameResult.corners.bottomLeft.y),
-    bottomRight: Offset( nativeScanFrameResult.corners.bottomRight.x,
+    topLeft: Offset(nativeScanFrameResult.corners.topLeft.x,
+        nativeScanFrameResult.corners.topLeft.y),
+    topRight: Offset(nativeScanFrameResult.corners.topRight.x,
+        nativeScanFrameResult.corners.topRight.y),
+    bottomLeft: Offset(nativeScanFrameResult.corners.bottomLeft.x,
+        nativeScanFrameResult.corners.bottomLeft.y),
+    bottomRight: Offset(nativeScanFrameResult.corners.bottomRight.x,
         nativeScanFrameResult.corners.bottomRight.y),
   );
   return ScanFrameResult(
-    corners: detectedCorners,
-    outputBufferSize: nativeScanFrameResult.outputBufferSize
-  );
+      corners: detectedCorners,
+      outputBufferSize: nativeScanFrameResult.outputBufferSize);
 }
