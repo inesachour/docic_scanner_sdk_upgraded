@@ -221,10 +221,10 @@ DetectedCorners DocumentScanner::scanFrame(uint8_t* y, uint8_t* u, uint8_t* v, i
     vector<Point> orderedCorners = findCorners(contours);
 
     return createDetectedCorners(
-            createCoordinate((double)orderedCorners[0].x, (double)orderedCorners[0].y),
-            createCoordinate((double)orderedCorners[1].x, (double)orderedCorners[1].y),
-            createCoordinate((double)orderedCorners[2].x, (double)orderedCorners[2].y),
-            createCoordinate((double)orderedCorners[3].x, (double)orderedCorners[3].y)
+            createCoordinate((double)orderedCorners[0].x / image.size().width, (double)orderedCorners[0].y / image.size().height),
+            createCoordinate((double)orderedCorners[1].x / image.size().width, (double)orderedCorners[1].y / image.size().height),
+            createCoordinate((double)orderedCorners[3].x / image.size().width, (double)orderedCorners[3].y / image.size().height),
+            createCoordinate((double)orderedCorners[2].x / image.size().width, (double)orderedCorners[2].y / image.size().height)
     );
 }
 

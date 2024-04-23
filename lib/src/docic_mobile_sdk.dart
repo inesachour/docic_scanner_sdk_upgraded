@@ -42,6 +42,13 @@ class DetectedCorners {
   Offset topRight;
   Offset bottomLeft;
   Offset bottomRight;
+
+  bool isEmpty() {
+    return topLeft == Offset.zero &&
+        topRight == Offset.zero &&
+        bottomLeft == Offset.zero &&
+        bottomRight == Offset.zero;
+  }
 }
 
 // C function signatures

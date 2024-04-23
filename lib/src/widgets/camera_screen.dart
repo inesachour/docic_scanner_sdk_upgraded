@@ -22,6 +22,8 @@ class _CameraScreenState extends State<CameraScreen> {
   bool _isFlashOn = false;
   List<Image> _images = [];
   DetectedCorners? _detectedCorners;
+  int _frameHeight = 0;
+  int _frameWidth = 0;
 
   TextStyle textStyle = const TextStyle(color: Colors.white);
 
@@ -78,8 +80,11 @@ class _CameraScreenState extends State<CameraScreen> {
                 image.planes[0].bytesPerRow,
                 image.planes[1].bytesPerRow,
                 image.planes[1].bytesPerPixel ?? 0);
+
             setState(() {
               _detectedCorners = detectedCorners;
+              _frameHeight = image.height;
+              _frameWidth = image.planes[0].bytesPerRow;
             });
 
             malloc.free(yData);
@@ -150,10 +155,15 @@ class _CameraScreenState extends State<CameraScreen> {
                           ),
                           color: Colors.black,
                         ),
-                        if (_detectedCorners != null)
+                        if (_detectedCorners != null &&
+                            !_detectedCorners!.isEmpty())
                           CustomPaint(
                             painter: ContoursPainter(
-                                detectedCorners: _detectedCorners!),
+                              detectedCorners: _detectedCorners!,
+                              imageHeight: _frameHeight,
+                              imageWidth: _frameWidth,
+                              color: Colors.red,
+                            ),
                             size: Size.infinite,
                           ),
                       ],
