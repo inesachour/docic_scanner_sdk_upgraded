@@ -24,14 +24,13 @@ class ContoursPainter extends CustomPainter {
     double renderedImageHeight = size.height;
     double renderedImageWidth = size.width;
 
-    double widthFactor = size.width / imageWidth;
     double heightFactor = size.height / imageHeight;
-    double sizeFactor = min(widthFactor, heightFactor);
+    double widthFactor = size.width / imageWidth;
 
-    renderedImageHeight = imageHeight * sizeFactor;
+    renderedImageHeight = imageHeight * heightFactor;
     top = ((size.height - renderedImageHeight) / 2);
 
-    renderedImageWidth = imageWidth * sizeFactor;
+    renderedImageWidth = imageWidth * widthFactor;
     left = ((size.width - renderedImageWidth) / 2);
 
     final points = [
@@ -48,8 +47,8 @@ class ContoursPainter extends CustomPainter {
     ];
 
     final paint = Paint()
-      ..color = color.withOpacity(0.5)
-      ..strokeWidth = 2
+      ..color = color
+      ..strokeWidth = 3.5
       ..strokeCap = StrokeCap.round;
 
     canvas.drawPoints(ui.PointMode.polygon, points, paint);
