@@ -190,41 +190,59 @@ Coordinate DocumentScanner::createCoordinate(double x, double y)
     return coordinate;
 }
 
-DetectedCorners DocumentScanner::createDetectedCorners(Coordinate topLeft, Coordinate topRight, Coordinate bottomLeft, Coordinate bottomRight)
+ScanFrameResult DocumentScanner::createScanFrameResult(Coordinate topLeft, Coordinate topRight, Coordinate bottomLeft, Coordinate bottomRight, int outputBufferSize)
 {
     DetectedCorners detectedCorners;
     detectedCorners.topLeft = topLeft;
     detectedCorners.topRight = topRight;
     detectedCorners.bottomLeft = bottomLeft;
     detectedCorners.bottomRight = bottomRight;
-    return detectedCorners;
+
+    ScanFrameResult scanFrameResult;
+    scanFrameResult.corners = detectedCorners;
+    scanFrameResult.outputBufferSize = outputBufferSize;
+
+    return scanFrameResult;
 }
 
 // Function that returns the detected corners of the document present in the camera frame
-DetectedCorners DocumentScanner::scanFrame(uint8_t* y, uint8_t* u, uint8_t* v, int height, int width, int bytesPerRow, int bytesPerPixel)
+ScanFrameResult DocumentScanner::scanFrame(uint8_t* y, uint8_t* u, uint8_t* v, int height, int width, int bytesPerRow, int bytesPerPixel, bool isDocumentDetected, uchar** encodedOutput)
 {
     Mat image = convertYUVtoRGB(y, u, v, height, width, bytesPerRow, bytesPerPixel);
 
     if (image.empty()) {
-        return createDetectedCorners(createCoordinate(0,0), createCoordinate(0, 0), createCoordinate(0, 0), createCoordinate(0, 0));
+        return createScanFrameResult(createCoordinate(0,0), createCoordinate(0, 0), createCoordinate(0, 0), createCoordinate(0, 0), 0);
     }
 
     struct DetectedCorners coordinate;
 
-    image = preprocessImage(image);
-    vector<vector<Point>> contours = detectContour(image);
+    Mat processedImage = image.clone();
+    processedImage = preprocessImage(processedImage);
+    vector<vector<Point>> contours = detectContour(processedImage);
+    vector<uchar> buf;
+    int bufferSize = 0;
 
     if (contours.empty()) {
-        return createDetectedCorners(createCoordinate(0, 0), createCoordinate(0, 0), createCoordinate(0, 0), createCoordinate(0, 0));
+        return createScanFrameResult(createCoordinate(0, 0), createCoordinate(0, 0), createCoordinate(0, 0), createCoordinate(0, 0), 0);
     }
 
     vector<Point> orderedCorners = findCorners(contours);
 
-    return createDetectedCorners(
+    if (isDocumentDetected) {
+        Mat result = transformAndCropImage(image, orderedCorners);
+        imencode(".jpg", result, buf);
+        *encodedOutput = (unsigned char*)malloc(buf.size());
+        for (int i = 0; i < buf.size(); i++)
+            (*encodedOutput)[i] = buf[i];
+        bufferSize = (int)buf.size();
+    }
+
+    return createScanFrameResult(
             createCoordinate((double)orderedCorners[0].x / image.size().width, (double)orderedCorners[0].y / image.size().height),
             createCoordinate((double)orderedCorners[1].x / image.size().width, (double)orderedCorners[1].y / image.size().height),
             createCoordinate((double)orderedCorners[3].x / image.size().width, (double)orderedCorners[3].y / image.size().height),
-            createCoordinate((double)orderedCorners[2].x / image.size().width, (double)orderedCorners[2].y / image.size().height)
+            createCoordinate((double)orderedCorners[2].x / image.size().width, (double)orderedCorners[2].y / image.size().height),
+            bufferSize
     );
 }
 
@@ -285,6 +303,5 @@ int DocumentScanner::scanImage(char* path, uchar** encodedOutput)
         for (int i = 0; i < buf.size(); i++)
             (*encodedOutput)[i] = buf[i];
         return (int)buf.size();
-
     }
 }

@@ -51,29 +51,54 @@ class DetectedCorners {
   }
 }
 
+final class NativeScanFrameResult extends ffi.Struct {
+  external NativeDetectedCorners corners;
+  @ffi.Int32()
+  external int outputBufferSize;
+
+  factory NativeScanFrameResult.allocate(NativeDetectedCorners corners, int outputBufferSize) =>
+      calloc<NativeScanFrameResult>().ref
+        ..corners = corners
+        ..outputBufferSize = outputBufferSize;
+}
+
+class ScanFrameResult {
+  ScanFrameResult({
+    required this.corners,
+    required this.outputBufferSize,
+  });
+
+  DetectedCorners corners;
+  int outputBufferSize;
+}
+
 // C function signatures
 typedef _scan_image_func = ffi.Int32 Function(
     ffi.Pointer<Utf8> path, ffi.Pointer<ffi.Pointer<ffi.Uint8>> encodedOutput);
-typedef _scan_frame_func = NativeDetectedCorners Function(
+typedef _scan_frame_func = NativeScanFrameResult Function(
     ffi.Pointer<ffi.Uint8> y,
     ffi.Pointer<ffi.Uint8> u,
     ffi.Pointer<ffi.Uint8> v,
     ffi.Int32 height,
     ffi.Int32 width,
     ffi.Int32 bytesPerRow,
-    ffi.Int32 bytesPerPixel);
+    ffi.Int32 bytesPerPixel,
+    ffi.Bool isDocumentDetected,
+    ffi.Pointer<ffi.Pointer<ffi.Uint8>> encodedOutput);
 
 // Dart function signatures
 typedef _ScanImageFunc = int Function(
     ffi.Pointer<Utf8> path, ffi.Pointer<ffi.Pointer<ffi.Uint8>> encodedOutput);
-typedef _ScanFrameFunc = NativeDetectedCorners Function(
+typedef _ScanFrameFunc = NativeScanFrameResult Function(
     ffi.Pointer<ffi.Uint8> y,
     ffi.Pointer<ffi.Uint8> u,
     ffi.Pointer<ffi.Uint8> v,
     int height,
     int width,
     int bytesPerRow,
-    int bytesPerPixel);
+    int bytesPerPixel,
+    bool isDocumentDetected,
+    ffi.Pointer<ffi.Pointer<ffi.Uint8>> encodedOutput);
 
 // Getting the library
 ffi.DynamicLibrary _lib = Platform.isAndroid
@@ -90,24 +115,30 @@ int scanImage(String path, ffi.Pointer<ffi.Pointer<ffi.Uint8>> encodedOutput) {
   return _scanImage(path.toNativeUtf8(), encodedOutput);
 }
 
-DetectedCorners scanFrame(
+ScanFrameResult scanFrame(
     ffi.Pointer<ffi.Uint8> y,
     ffi.Pointer<ffi.Uint8> u,
     ffi.Pointer<ffi.Uint8> v,
     int height,
     int width,
     int bytesPerRow,
-    int bytesPerPixel) {
-  NativeDetectedCorners nativeDetectedCorners =
-      _scanFrame(y, u, v, height, width, bytesPerRow, bytesPerPixel);
-  return DetectedCorners(
+    int bytesPerPixel,
+    bool isDocumentDetected,
+    ffi.Pointer<ffi.Pointer<ffi.Uint8>> encodedOutput) {
+  NativeScanFrameResult nativeScanFrameResult =
+      _scanFrame(y, u, v, height, width, bytesPerRow, bytesPerPixel, isDocumentDetected, encodedOutput);
+  DetectedCorners detectedCorners = DetectedCorners(
     topLeft: Offset(
-        nativeDetectedCorners.topLeft.x, nativeDetectedCorners.topLeft.y),
+        nativeScanFrameResult.corners.topLeft.x,  nativeScanFrameResult.corners.topLeft.y),
     topRight: Offset(
-        nativeDetectedCorners.topRight.x, nativeDetectedCorners.topRight.y),
+        nativeScanFrameResult.corners.topRight.x,  nativeScanFrameResult.corners.topRight.y),
     bottomLeft: Offset(
-        nativeDetectedCorners.bottomLeft.x, nativeDetectedCorners.bottomLeft.y),
-    bottomRight: Offset(nativeDetectedCorners.bottomRight.x,
-        nativeDetectedCorners.bottomRight.y),
+        nativeScanFrameResult.corners.bottomLeft.x,  nativeScanFrameResult.corners.bottomLeft.y),
+    bottomRight: Offset( nativeScanFrameResult.corners.bottomRight.x,
+        nativeScanFrameResult.corners.bottomRight.y),
+  );
+  return ScanFrameResult(
+    corners: detectedCorners,
+    outputBufferSize: nativeScanFrameResult.outputBufferSize
   );
 }

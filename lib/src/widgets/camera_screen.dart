@@ -72,19 +72,25 @@ class _CameraScreenState extends State<CameraScreen> {
             uDatapointerList.setAll(0, image.planes[1].bytes);
             vDatapointerList.setAll(0, image.planes[2].bytes);
 
-            DetectedCorners detectedCorners = scanFrame(
+            ffi.Pointer<ffi.Pointer<ffi.Uint8>> encodedOutputImage = malloc.allocate(8);
+
+            ScanFrameResult scanFrameResult = scanFrame(
                 yData,
                 uData,
                 vData,
                 image.height,
                 image.planes[0].bytesPerRow,
                 image.planes[1].bytesPerRow,
-                image.planes[1].bytesPerPixel ?? 0);
+                image.planes[1].bytesPerPixel ?? 0,
+                _detectedCorners != null && !_detectedCorners!.isEmpty(),
+                encodedOutputImage
+            );
 
             setState(() {
-              _detectedCorners = detectedCorners;
+              _detectedCorners = scanFrameResult.corners;
               _frameHeight = image.height;
               _frameWidth = image.planes[0].bytesPerRow;
+              debugPrint(scanFrameResult.outputBufferSize.toString());
             });
 
             malloc.free(yData);
