@@ -1,6 +1,6 @@
 import 'package:camera/camera.dart';
 import 'package:document_scanner_ocr/src/widgets/camera_screen.dart';
-import 'package:document_scanner_ocr/src/widgets/scan_image_screen.dart';
+import 'package:document_scanner_ocr/src/widgets/scan_image_from_gallery_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image_picker/image_picker.dart';
@@ -42,7 +42,7 @@ void main() {
     testWidgets('ScanImageScreen UI Test', (WidgetTester tester) async {
       // Build our widget and trigger a frame.
       await tester.pumpWidget(MaterialApp(
-        home: ScanImageScreen(
+        home: ScanImageFromGalleryScreen(
           images: mockImages,
         ),
       ));

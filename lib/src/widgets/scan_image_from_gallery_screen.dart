@@ -10,18 +10,18 @@ import 'package:ffi/ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:pdf/widgets.dart' as pw;
 
-class ScanImageScreen extends StatefulWidget {
+class ScanImageFromGalleryScreen extends StatefulWidget {
   List<XFile> images;
-  bool isFromGallery;
 
-  ScanImageScreen(
-      {super.key, required this.images, this.isFromGallery = false});
+  ScanImageFromGalleryScreen({super.key, required this.images});
 
   @override
-  State<ScanImageScreen> createState() => _ScanImageScreenState();
+  State<ScanImageFromGalleryScreen> createState() =>
+      _ScanImageFromGalleryScreenState();
 }
 
-class _ScanImageScreenState extends State<ScanImageScreen> {
+class _ScanImageFromGalleryScreenState
+    extends State<ScanImageFromGalleryScreen> {
   TextStyle textStyle = const TextStyle(
       color: Colors.white, decoration: TextDecoration.none, fontSize: 14);
 
@@ -76,7 +76,7 @@ class _ScanImageScreenState extends State<ScanImageScreen> {
   @override
   void initState() {
     super.initState();
-    imagesNumber = widget.isFromGallery ? widget.images.length : 0;
+    imagesNumber = widget.images.length;
     _isLastImage = (imagesNumber - 1 == _currentImageIndex);
     scanCurrentImage(widget.images[0]);
   }
