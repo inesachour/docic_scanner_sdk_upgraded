@@ -24,6 +24,7 @@ class _CameraScreenState extends State<CameraScreen> {
   DetectedCorners? _detectedCorners;
   int _frameHeight = 0;
   int _frameWidth = 0;
+  int detectedDocumentFramesNumber = 0;
 
   TextStyle textStyle = const TextStyle(color: Colors.white);
 
@@ -90,6 +91,13 @@ class _CameraScreenState extends State<CameraScreen> {
               _frameHeight = image.height;
               _frameWidth = image.planes[0].bytesPerRow;
             });
+
+            if(_detectedCorners != null && !_detectedCorners!.isEmpty()){
+              detectedDocumentFramesNumber++;
+            }
+            else{
+              detectedDocumentFramesNumber = 0;
+            }
 
             malloc.free(yData);
             malloc.free(uData);
