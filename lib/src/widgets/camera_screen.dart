@@ -89,12 +89,12 @@ class _CameraScreenState extends State<CameraScreen> {
               _detectedCorners = scanFrameResult.corners;
               _frameHeight = image.height;
               _frameWidth = image.planes[0].bytesPerRow;
-              debugPrint(scanFrameResult.outputBufferSize.toString());
             });
 
             malloc.free(yData);
             malloc.free(uData);
             malloc.free(vData);
+            malloc.free(encodedOutputImage);
           }
         });
       });
