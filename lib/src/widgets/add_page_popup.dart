@@ -26,7 +26,9 @@ class AddPagePopup extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 GestureDetector(
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.pop(context, false);
+                  },
                   child: Container(
                     padding: const EdgeInsets.symmetric(
                         vertical: 6.0, horizontal: 35.0),
@@ -44,7 +46,9 @@ class AddPagePopup extends StatelessWidget {
                   ),
                 ),
                 GestureDetector(
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.pop(context, true);
+                  },
                   child: Container(
                     padding: const EdgeInsets.symmetric(
                         vertical: 6.0, horizontal: 35.0),
