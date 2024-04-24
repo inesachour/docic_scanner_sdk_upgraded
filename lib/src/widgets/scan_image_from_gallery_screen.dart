@@ -158,7 +158,7 @@ class _ScanImageFromGalleryScreenState
             ),
           ),
           Expanded(
-            child: ScanImageFooter(
+            child: ScanImageFromGalleryFooter(
               isLoading: _isLoading,
               onNextButtonClick: onNextButtonClick,
               imagesNumber: imagesNumber,

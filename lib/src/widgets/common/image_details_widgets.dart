@@ -38,7 +38,7 @@ Widget ScanImageHeader({required BuildContext context, required bool isLoading, 
   );
 }
 
-Widget ScanImageFooter({required bool isLoading, required VoidCallback onNextButtonClick, required int imagesNumber, required bool isLastImage}){
+Widget ScanImageFromGalleryFooter({required bool isLoading, required VoidCallback onNextButtonClick, required int imagesNumber, required bool isLastImage}){
   return Container(
     color: Colors.black,
     child: Row(
@@ -58,6 +58,28 @@ Widget ScanImageFooter({required bool isLoading, required VoidCallback onNextBut
               textAlign: TextAlign.center,
             ),
           ),
+      ],
+    ),
+  );
+}
+
+Widget ScanImageFromCameraFooter({required VoidCallback onNextButtonClick}){
+  return Container(
+    color: Colors.black,
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        ImageCropper(),
+        ImageRotator(),
+        GestureDetector(
+          onTap: onNextButtonClick,
+          child: Text(
+            "Suivant",
+            style: textStyle,
+            textAlign: TextAlign.center,
+          ),
+        ),
       ],
     ),
   );

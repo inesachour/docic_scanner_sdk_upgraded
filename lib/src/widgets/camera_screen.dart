@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:camera/camera.dart';
 import 'package:document_scanner_ocr/src/docic_mobile_sdk.dart';
 import 'package:document_scanner_ocr/src/widgets/contours_painter.dart';
+import 'package:document_scanner_ocr/src/widgets/scan_image_from_camera.dart';
 import 'package:document_scanner_ocr/src/widgets/scan_image_from_gallery_screen.dart';
 import 'package:ffi/ffi.dart';
 import 'package:flutter/material.dart';
@@ -25,6 +26,7 @@ class _CameraScreenState extends State<CameraScreen> {
   int _frameHeight = 0;
   int _frameWidth = 0;
   int detectedDocumentFramesNumber = 0;
+  List<Uint8List> processedImages = [];
 
   TextStyle textStyle = const TextStyle(color: Colors.white);
 
@@ -96,6 +98,19 @@ class _CameraScreenState extends State<CameraScreen> {
               detectedDocumentFramesNumber++;
             } else {
               detectedDocumentFramesNumber = 0;
+            }
+
+            if(detectedDocumentFramesNumber == 6){
+              ffi.Pointer<ffi.Uint8> cppPointer = encodedOutputImage[0];
+              Uint8List encodedImageBytes = cppPointer.asTypedList(scanFrameResult.outputBufferSize);
+              debugPrint("Test ${scanFrameResult.outputBufferSize}");
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) =>
+                      ScanImageFromCameraScreen(
+                        image: encodedImageBytes,
+                        imageIndex: processedImages.length,
+                      )));
+              malloc.free(cppPointer);
             }
 
             malloc.free(yData);
