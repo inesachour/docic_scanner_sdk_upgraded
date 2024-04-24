@@ -6,6 +6,7 @@ import 'dart:typed_data';
 
 import 'package:camera/camera.dart';
 import 'package:document_scanner_ocr/src/docic_mobile_sdk.dart';
+import 'package:document_scanner_ocr/src/widgets/common/image_editing_widgets.dart';
 import 'package:ffi/ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -162,21 +163,9 @@ class _ScanImageFromGalleryScreenState
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   if (!_isLoading)
-                    GestureDetector(
-                      onTap: () {},
-                      child: const Icon(
-                        Icons.crop,
-                        color: Colors.white,
-                      ),
-                    ),
+                    ImageCropper(),
                   if (!_isLoading)
-                    GestureDetector(
-                      onTap: () {},
-                      child: const Icon(
-                        Icons.rotate_right,
-                        color: Colors.white,
-                      ),
-                    ),
+                    ImageRotator(),
                   if (!_isLoading)
                     GestureDetector(
                       onTap: () async {

@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'dart:ui' as ui;
 
 import 'package:document_scanner_ocr/src/docic_mobile_sdk.dart';
