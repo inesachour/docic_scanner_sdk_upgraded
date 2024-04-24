@@ -205,7 +205,7 @@ ScanFrameResult DocumentScanner::createScanFrameResult(Coordinate topLeft, Coord
     return scanFrameResult;
 }
 
-// Function that returns the detected corners of the document present in the camera frame
+// Function that returns the detected corners and the buffer length if a document is detected (after a certain number of frames)
 ScanFrameResult DocumentScanner::scanFrame(uint8_t* y, uint8_t* u, uint8_t* v, int height, int width, int bytesPerRow, int bytesPerPixel, bool isDocumentDetected, uchar** encodedOutput)
 {
     Mat image = convertYUVtoRGB(y, u, v, height, width, bytesPerRow, bytesPerPixel);
@@ -246,6 +246,7 @@ ScanFrameResult DocumentScanner::scanFrame(uint8_t* y, uint8_t* u, uint8_t* v, i
     );
 }
 
+// Function that converts YUV420 image to RGB
 Mat DocumentScanner::convertYUVtoRGB(uint8_t* y, uint8_t* u, uint8_t* v, int height, int width, int bytesPerRow, int bytesPerPixel)
 {
     int uvIndex, index;
@@ -255,27 +256,38 @@ Mat DocumentScanner::convertYUVtoRGB(uint8_t* y, uint8_t* u, uint8_t* v, int hei
 
     Mat image(height, width, CV_8UC3);
 
+    // Iterate over each pixel in the image
     for (int i = 0; i < width; ++i)
     {
         for (int j = 0; j < height; ++j)
         {
+            // Calculate indices for YUV components
             uvIndex = bytesPerPixel * ((int)floor(i / 2)) + bytesPerRow * ((int)floor(j / 2));
             index = j * width + i;
 
+            // Extract YUV components for the current pixel
             yp = y[index];
             up = u[uvIndex];
             vp = v[uvIndex];
+
+            // Convert YUV to RGB
             rt = round(yp + vp * 1436 / 1024 - 179);
             gt = round(yp - up * 46549 / 131072 + 44 - vp * 93604 / 131072 + 91);
             bt = round(yp + up * 1814 / 1024 - 227);
+
+            // Clip RGB values to [0, 255]
             r = rt < 0 ? 0 : (rt > 255 ? 255 : rt);
             g = gt < 0 ? 0 : (gt > 255 ? 255 : gt);
             b = bt < 0 ? 0 : (bt > 255 ? 255 : bt);
+
+            // Set RGB values for the current pixel in the image
             image.at<Vec3b>(j, i) = Vec3b(b, g, r);
         }
     }
 
+    // Rotate the image clockwise
     rotate(image, image, ROTATE_90_CLOCKWISE);
+
     return image;
 }
 
