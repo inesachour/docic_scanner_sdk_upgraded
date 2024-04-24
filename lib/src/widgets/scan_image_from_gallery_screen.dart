@@ -6,6 +6,7 @@ import 'dart:typed_data';
 
 import 'package:camera/camera.dart';
 import 'package:document_scanner_ocr/src/docic_mobile_sdk.dart';
+import 'package:document_scanner_ocr/src/widgets/common/image_details_widgets.dart';
 import 'package:document_scanner_ocr/src/widgets/common/image_editing_widgets.dart';
 import 'package:ffi/ffi.dart';
 import 'package:flutter/material.dart';
@@ -74,6 +75,32 @@ class _ScanImageFromGalleryScreenState
     });
   }
 
+  void onNextButtonClick() async {
+    _currentImageIndex++;
+
+    if (_currentImageIndex < imagesNumber - 1) {
+      scanCurrentImage(widget.images[_currentImageIndex]);
+      setState(() {});
+    } else if (_currentImageIndex == imagesNumber - 1) {
+      _isLastImage = true;
+      scanCurrentImage(widget.images[_currentImageIndex]);
+      setState(() {});
+    } else {
+      //TODO SAVE PDF or SHOW IT for confirmation
+      String directory = "/storage/emulated/0/Download/";
+      bool dirDownloadExists =
+          await Directory(directory).exists();
+      if (dirDownloadExists) {
+        directory = "/storage/emulated/0/Download";
+      } else {
+        directory = "/storage/emulated/0/Downloads";
+      }
+      final file = File("$directory/example.pdf");
+      await file.writeAsBytes(await pdf.save());
+    Navigator.pop(context);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -96,35 +123,10 @@ class _ScanImageFromGalleryScreenState
       body: Column(
         children: [
           Expanded(
-            child: Container(
-              color: Colors.black,
-              padding:
-                  const EdgeInsets.only(left: 15.0, right: 15.0, top: 25.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  if (!_isLoading)
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: const Icon(
-                        Icons.arrow_back,
-                        color: Colors.white,
-                      ),
-                    ),
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () {},
-                      child: Text(
-                        "Page ${_currentImageIndex + 1}",
-                        style: textStyle,
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+            child: ScanImageHeader(
+              context: context,
+              isLoading: _isLoading,
+              imageNumber: _currentImageIndex + 1,
             ),
           ),
           Expanded(
@@ -156,51 +158,11 @@ class _ScanImageFromGalleryScreenState
             ),
           ),
           Expanded(
-            child: Container(
-              color: Colors.black,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  if (!_isLoading)
-                    ImageCropper(),
-                  if (!_isLoading)
-                    ImageRotator(),
-                  if (!_isLoading)
-                    GestureDetector(
-                      onTap: () async {
-                        _currentImageIndex++;
-
-                        if (_currentImageIndex < imagesNumber - 1) {
-                          scanCurrentImage(widget.images[_currentImageIndex]);
-                          setState(() {});
-                        } else if (_currentImageIndex == imagesNumber - 1) {
-                          _isLastImage = true;
-                          scanCurrentImage(widget.images[_currentImageIndex]);
-                          setState(() {});
-                        } else {
-                          //TODO SAVE PDF or SHOW IT for confirmation
-                          String directory = "/storage/emulated/0/Download/";
-                          bool dirDownloadExists =
-                              await Directory(directory).exists();
-                          if (dirDownloadExists) {
-                            directory = "/storage/emulated/0/Download";
-                          } else {
-                            directory = "/storage/emulated/0/Downloads";
-                          }
-                          final file = File("$directory/example.pdf");
-                          await file.writeAsBytes(await pdf.save());
-                          Navigator.pop(context);
-                        }
-                      },
-                      child: Text(
-                        _isLastImage ? "Confirmer\n($imagesNumber)" : "Suivant",
-                        style: textStyle,
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                ],
-              ),
+            child: ScanImageFooter(
+              isLoading: _isLoading,
+              onNextButtonClick: onNextButtonClick,
+              imagesNumber: imagesNumber,
+              isLastImage: _isLastImage,
             ),
           ),
         ],
