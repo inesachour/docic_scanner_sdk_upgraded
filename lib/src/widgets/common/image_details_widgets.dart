@@ -5,11 +5,13 @@ import 'package:flutter/material.dart';
 TextStyle textStyle = const TextStyle(
     color: Colors.white, decoration: TextDecoration.none, fontSize: 14);
 
-Widget ScanImageHeader({required BuildContext context, required bool isLoading, required int imageNumber}){
+Widget ScanImageHeader(
+    {required BuildContext context,
+    required bool isLoading,
+    required int imageNumber}) {
   return Container(
     color: Colors.black,
-    padding:
-    const EdgeInsets.only(left: 15.0, right: 15.0, top: 25.0),
+    padding: const EdgeInsets.only(left: 15.0, right: 15.0, top: 25.0),
     child: Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -38,17 +40,19 @@ Widget ScanImageHeader({required BuildContext context, required bool isLoading, 
   );
 }
 
-Widget ScanImageFromGalleryFooter({required bool isLoading, required VoidCallback onNextButtonClick, required int imagesNumber, required bool isLastImage}){
+Widget ScanImageFromGalleryFooter(
+    {required bool isLoading,
+    required VoidCallback onNextButtonClick,
+    required int imagesNumber,
+    required bool isLastImage}) {
   return Container(
     color: Colors.black,
     child: Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        if (!isLoading)
-          ImageCropper(),
-        if (!isLoading)
-          ImageRotator(),
+        if (!isLoading) ImageCropper(),
+        if (!isLoading) ImageRotator(),
         if (!isLoading)
           GestureDetector(
             onTap: onNextButtonClick,
@@ -63,7 +67,7 @@ Widget ScanImageFromGalleryFooter({required bool isLoading, required VoidCallbac
   );
 }
 
-Widget ScanImageFromCameraFooter({required VoidCallback onNextButtonClick}){
+Widget ScanImageFromCameraFooter({required VoidCallback onNextButtonClick}) {
   return Container(
     color: Colors.black,
     child: Row(

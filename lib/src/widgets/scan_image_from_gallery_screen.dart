@@ -87,8 +87,7 @@ class _ScanImageFromGalleryScreenState
     } else {
       //TODO SAVE PDF or SHOW IT for confirmation
       String directory = "/storage/emulated/0/Download/";
-      bool dirDownloadExists =
-          await Directory(directory).exists();
+      bool dirDownloadExists = await Directory(directory).exists();
       if (dirDownloadExists) {
         directory = "/storage/emulated/0/Download";
       } else {
@@ -96,7 +95,7 @@ class _ScanImageFromGalleryScreenState
       }
       final file = File("$directory/example.pdf");
       await file.writeAsBytes(await pdf.save());
-    Navigator.pop(context);
+      Navigator.pop(context);
     }
   }
 

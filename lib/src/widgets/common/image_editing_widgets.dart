@@ -1,7 +1,6 @@
-
 import 'package:flutter/material.dart';
 
-Widget ImageCropper(){
+Widget ImageCropper() {
   return GestureDetector(
     onTap: () {},
     child: const Icon(
@@ -11,7 +10,7 @@ Widget ImageCropper(){
   );
 }
 
-Widget ImageRotator(){
+Widget ImageRotator() {
   return GestureDetector(
     onTap: () {},
     child: const Icon(

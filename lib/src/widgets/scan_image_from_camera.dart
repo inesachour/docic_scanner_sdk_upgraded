@@ -5,25 +5,25 @@ import 'package:document_scanner_ocr/src/widgets/common/image_details_widgets.da
 import 'package:flutter/material.dart';
 
 class ScanImageFromCameraScreen extends StatefulWidget {
-  ScanImageFromCameraScreen({super.key, required this.image, required this.imageIndex});
+  ScanImageFromCameraScreen(
+      {super.key, required this.image, required this.imageIndex});
   Uint8List image;
   int imageIndex;
 
   @override
-  State<ScanImageFromCameraScreen> createState() => _ScanImageFromCameraScreenState();
+  State<ScanImageFromCameraScreen> createState() =>
+      _ScanImageFromCameraScreenState();
 }
 
 class _ScanImageFromCameraScreenState extends State<ScanImageFromCameraScreen> {
-  
   void onNextButtonClick() async {
     final bool addAnotherImage = await showDialog(
       context: context,
       builder: (BuildContext context) => const AddPagePopup(),
     );
-    if(addAnotherImage){
+    if (addAnotherImage) {
       Navigator.pop(context, true);
-    }
-    else{
+    } else {
       //TODO GENERATE PDF OR LIST LIST OF IMAGES
     }
   }
@@ -37,15 +37,13 @@ class _ScanImageFromCameraScreenState extends State<ScanImageFromCameraScreen> {
             child: ScanImageHeader(
               context: context,
               isLoading: false,
-              imageNumber: widget.imageIndex+1,
+              imageNumber: widget.imageIndex + 1,
             ),
           ),
-          
           Expanded(
             flex: 6,
             child: Image.memory(widget.image),
           ),
-
           Expanded(
             child: ScanImageFromCameraFooter(
               onNextButtonClick: onNextButtonClick,
