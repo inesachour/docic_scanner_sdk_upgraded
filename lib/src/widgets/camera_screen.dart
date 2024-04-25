@@ -27,6 +27,7 @@ class _CameraScreenState extends State<CameraScreen> {
   int _frameWidth = 0;
   int detectedDocumentFramesNumber = 0;
   List<Uint8List> processedImages = [];
+  double cameraWidthFactor = 1.1;
 
   TextStyle textStyle = const TextStyle(color: Colors.white);
 
@@ -104,14 +105,14 @@ class _CameraScreenState extends State<CameraScreen> {
               ffi.Pointer<ffi.Uint8> cppPointer = encodedOutputImage[0];
               Uint8List encodedImageBytes =
                   cppPointer.asTypedList(scanFrameResult.outputBufferSize);
-              final bool addAnotherImage =
+              final bool? addAnotherImage =
                   await Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => ScanImageFromCameraScreen(
                             image: encodedImageBytes,
                             imageIndex: processedImages.length,
                           )));
 
-              if (addAnotherImage) {
+              if (addAnotherImage != null && addAnotherImage) {
                 processedImages.add(encodedImageBytes);
               }
 
@@ -183,7 +184,7 @@ class _CameraScreenState extends State<CameraScreen> {
                       children: [
                         Container(
                           child: FractionallySizedBox(
-                            widthFactor: 0.92,
+                            widthFactor: cameraWidthFactor,
                             child: CameraPreview(_cameraController!),
                           ),
                           color: Colors.black,
@@ -195,6 +196,7 @@ class _CameraScreenState extends State<CameraScreen> {
                               detectedCorners: _detectedCorners!,
                               imageHeight: _frameHeight,
                               imageWidth: _frameWidth,
+                              cameraWidthFactor: cameraWidthFactor,
                               color: Colors.red,
                             ),
                             size: Size.infinite,

@@ -7,12 +7,14 @@ class ContoursPainter extends CustomPainter {
   final DetectedCorners detectedCorners;
   int imageHeight;
   int imageWidth;
+  double cameraWidthFactor;
   Color color;
 
   ContoursPainter(
       {required this.detectedCorners,
       required this.imageHeight,
       required this.imageWidth,
+        required this.cameraWidthFactor,
       required this.color});
 
   @override
@@ -29,7 +31,7 @@ class ContoursPainter extends CustomPainter {
     renderedImageHeight = imageHeight * heightFactor;
     top = ((size.height - renderedImageHeight) / 2);
 
-    renderedImageWidth = imageWidth * widthFactor;
+    renderedImageWidth = imageWidth * widthFactor * cameraWidthFactor;
     left = ((size.width - renderedImageWidth) / 2);
 
     final points = [
