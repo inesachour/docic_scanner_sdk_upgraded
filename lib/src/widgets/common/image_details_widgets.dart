@@ -1,5 +1,4 @@
 import 'package:document_scanner_ocr/src/widgets/common/image_editing_widgets.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 TextStyle textStyle = const TextStyle(

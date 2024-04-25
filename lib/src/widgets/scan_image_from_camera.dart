@@ -1,5 +1,4 @@
 import 'dart:typed_data';
-
 import 'package:document_scanner_ocr/src/widgets/add_page_popup.dart';
 import 'package:document_scanner_ocr/src/widgets/common/image_details_widgets.dart';
 import 'package:flutter/material.dart';

@@ -1,6 +1,5 @@
 import 'dart:ui' as ui;
-
-import 'package:document_scanner_ocr/src/docic_mobile_sdk.dart';
+import 'package:document_scanner_ocr/src/widgets/models/scan_models.dart';
 import 'package:flutter/material.dart';
 
 class ContoursPainter extends CustomPainter {

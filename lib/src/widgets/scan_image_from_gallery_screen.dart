@@ -3,7 +3,6 @@ import 'dart:ffi';
 import 'dart:io';
 import 'dart:isolate';
 import 'dart:typed_data';
-
 import 'package:camera/camera.dart';
 import 'package:document_scanner_ocr/src/docic_mobile_sdk.dart';
 import 'package:document_scanner_ocr/src/widgets/common/image_details_widgets.dart';
