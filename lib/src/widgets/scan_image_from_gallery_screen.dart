@@ -129,30 +129,33 @@ class _ScanImageFromGalleryScreenState
           ),
           Expanded(
             flex: 6,
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                _currentImageIndex >= processedImages.length
-                    ? Image.file(
-                        File(widget.images[_currentImageIndex].path),
-                        fit: BoxFit.fitHeight,
-                      )
-                    : Image.memory(
-                        processedImages[_currentImageIndex],
-                        fit: BoxFit.fitHeight,
-                      ),
-                if (_isLoading)
-                  const Center(
-                    child: SizedBox(
-                      height: 100,
-                      width: 100,
-                      child: CircularProgressIndicator(
-                        color: Color(0xff808080),
-                        strokeWidth: 7,
+            child: Container(
+              color: Colors.black,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  _currentImageIndex >= processedImages.length
+                      ? Image.file(
+                          File(widget.images[_currentImageIndex].path),
+                          fit: BoxFit.fitHeight,
+                        )
+                      : Image.memory(
+                          processedImages[_currentImageIndex],
+                          fit: BoxFit.fitHeight,
+                        ),
+                  if (_isLoading)
+                    const Center(
+                      child: SizedBox(
+                        height: 100,
+                        width: 100,
+                        child: CircularProgressIndicator(
+                          color: Color(0xff808080),
+                          strokeWidth: 7,
+                        ),
                       ),
                     ),
-                  ),
-              ],
+                ],
+              ),
             ),
           ),
           Expanded(

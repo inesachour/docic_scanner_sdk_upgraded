@@ -42,7 +42,10 @@ class _ScanImageFromCameraScreenState extends State<ScanImageFromCameraScreen> {
           ),
           Expanded(
             flex: 6,
-            child: Image.memory(widget.image),
+            child: Container(
+              color: Colors.black,
+              child: Image.memory(widget.image),
+            ),
           ),
           Expanded(
             child: ScanImageFromCameraFooter(
