@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'package:camera/camera.dart';
 import 'package:document_scanner_ocr/src/docic_mobile_sdk.dart';
 import 'package:document_scanner_ocr/src/widgets/contours_painter.dart';
-import 'package:document_scanner_ocr/src/widgets/models/scan_models.dart';
+import 'package:document_scanner_ocr/src/widgets/models/native_communication_models.dart';
 import 'package:document_scanner_ocr/src/widgets/scan_image_from_camera.dart';
 import 'package:document_scanner_ocr/src/widgets/scan_image_from_gallery_screen.dart';
 import 'package:ffi/ffi.dart';
