@@ -14,7 +14,7 @@ class ContoursPainter extends CustomPainter {
       {required this.detectedCorners,
       required this.imageHeight,
       required this.imageWidth,
-        required this.cameraWidthFactor,
+      required this.cameraWidthFactor,
       required this.color});
 
   @override
