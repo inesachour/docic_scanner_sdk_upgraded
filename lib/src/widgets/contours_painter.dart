@@ -1,5 +1,5 @@
 import 'dart:ui' as ui;
-import 'package:document_scanner_ocr/src/widgets/models/native_communication_models.dart';
+import 'package:document_scanner_ocr/src/models/native_communication_models.dart';
 import 'package:flutter/material.dart';
 
 class ContoursPainter extends CustomPainter {

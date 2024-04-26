@@ -1,7 +1,7 @@
 import 'dart:ffi' as ffi;
 import 'dart:io';
 import 'dart:ui';
-import 'package:document_scanner_ocr/src/widgets/models/native_communication_models.dart';
+import 'package:document_scanner_ocr/src/models/native_communication_models.dart';
 import 'package:ffi/ffi.dart';
 
 // C function signatures
