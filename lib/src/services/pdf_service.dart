@@ -9,7 +9,7 @@ class PdfService{
           pw.Page(build: (pw.Context context) {
             return pw.FullPage(
               ignoreMargins: true,
-              child: pw.Image(pw.MemoryImage(image), fit: pw.BoxFit.fitHeight,),
+              child: pw.Image(pw.MemoryImage(image), fit: pw.BoxFit.contain,),
             );
           }),
       );
