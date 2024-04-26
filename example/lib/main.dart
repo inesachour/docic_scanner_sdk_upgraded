@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:document_scanner_ocr/document_scanner_ocr.dart';
 
@@ -30,7 +32,19 @@ class _ScannerOcrScreenState extends State<ScannerOcrScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        child: const DocumentScannerOcr(),
+        child: DocumentScannerOcr(
+          onFinish: (ScannerResult scannerResult) async{
+            String directory = "/storage/emulated/0/Download/";
+            bool dirDownloadExists = await Directory(directory).exists();
+            if (dirDownloadExists) {
+              directory = "/storage/emulated/0/Download";
+            } else {
+              directory = "/storage/emulated/0/Downloads";
+            }
+            final file = File("$directory/testWOW.pdf");
+            await file.writeAsBytes(scannerResult.pdfBytes);
+          },
+        ),
       ),
     );
   }

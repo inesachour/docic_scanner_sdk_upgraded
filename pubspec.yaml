@@ -9,9 +9,11 @@ environment:
 
 dependencies:
   camera: ^0.10.5+9
+  ffi: ^2.1.2
   flutter:
     sdk: flutter
   image_picker: ^1.0.7
+  pdf: ^3.10.8
   plugin_platform_interface: ^2.0.2
 
 dev_dependencies:
