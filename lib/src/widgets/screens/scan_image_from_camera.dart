@@ -1,13 +1,15 @@
 import 'dart:typed_data';
 import 'package:document_scanner_ocr/src/widgets/add_page_popup.dart';
 import 'package:document_scanner_ocr/src/widgets/common/image_details_widgets.dart';
+import 'package:document_scanner_ocr/src/widgets/screens/scan_result_screen.dart';
 import 'package:flutter/material.dart';
 
 class ScanImageFromCameraScreen extends StatefulWidget {
   Uint8List image;
   int imageIndex;
+  List<Uint8List> processedImages;
 
-  ScanImageFromCameraScreen({super.key, required this.image, required this.imageIndex});
+  ScanImageFromCameraScreen({super.key, required this.image, required this.imageIndex, required this.processedImages});
 
   @override
   State<ScanImageFromCameraScreen> createState() => _ScanImageFromCameraScreenState();
@@ -20,9 +22,15 @@ class _ScanImageFromCameraScreenState extends State<ScanImageFromCameraScreen> {
       builder: (BuildContext context) => const AddPagePopup(),
     );
     if (addAnotherImage) {
-      Navigator.pop(context, true);
+      Navigator.pop(context);
     } else {
-      //TODO GENERATE PDF OR LIST LIST OF IMAGES
+      Navigator.of(context).push(
+          MaterialPageRoute(
+              builder: (context) =>
+                  ScanResultScreen(
+                    images: widget.processedImages,
+                  )
+          ));
     }
   }
 

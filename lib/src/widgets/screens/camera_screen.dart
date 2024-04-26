@@ -96,17 +96,16 @@ class _CameraScreenState extends State<CameraScreen> {
             if (detectedDocumentFramesNumber == 6) {
               ffi.Pointer<ffi.Uint8> cppPointer = encodedOutputImage[0];
               Uint8List encodedImageBytes = cppPointer.asTypedList(scanFrameResult.outputBufferSize);
-              final bool? addAnotherImage = await Navigator.of(context).push(
+              processedImages.add(encodedImageBytes);
+
+              await Navigator.of(context).push(
                   MaterialPageRoute(
                       builder: (context) => ScanImageFromCameraScreen(
                         image: encodedImageBytes,
                         imageIndex: processedImages.length,
+                        processedImages: processedImages,
                       )
                   ));
-
-              if (addAnotherImage != null && addAnotherImage) {
-                processedImages.add(encodedImageBytes);
-              }
 
               malloc.free(cppPointer);
               detectedDocumentFramesNumber = 0;
