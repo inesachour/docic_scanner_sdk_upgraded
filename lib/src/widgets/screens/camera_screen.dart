@@ -102,7 +102,7 @@ class _CameraScreenState extends State<CameraScreen> {
                   MaterialPageRoute(
                       builder: (context) => ScanImageFromCameraScreen(
                         image: encodedImageBytes,
-                        imageIndex: processedImages.length,
+                        imageIndex: processedImages.length - 1,
                         processedImages: processedImages,
                       )
                   ));
