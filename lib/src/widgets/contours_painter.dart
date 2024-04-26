@@ -9,12 +9,13 @@ class ContoursPainter extends CustomPainter {
   double cameraWidthFactor;
   Color color;
 
-  ContoursPainter(
-      {required this.detectedCorners,
-      required this.imageHeight,
-      required this.imageWidth,
-      required this.cameraWidthFactor,
-      required this.color});
+  ContoursPainter({
+    required this.detectedCorners,
+    required this.imageHeight,
+    required this.imageWidth,
+    required this.cameraWidthFactor,
+    required this.color
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -34,16 +35,11 @@ class ContoursPainter extends CustomPainter {
     left = ((size.width - renderedImageWidth) / 2);
 
     final points = [
-      Offset(left + detectedCorners.topLeft.dx * renderedImageWidth,
-          top + detectedCorners.topLeft.dy * renderedImageHeight),
-      Offset(left + detectedCorners.topRight.dx * renderedImageWidth,
-          top + detectedCorners.topRight.dy * renderedImageHeight),
-      Offset(left + detectedCorners.bottomRight.dx * renderedImageWidth,
-          top + (detectedCorners.bottomRight.dy * renderedImageHeight)),
-      Offset(left + detectedCorners.bottomLeft.dx * renderedImageWidth,
-          top + detectedCorners.bottomLeft.dy * renderedImageHeight),
-      Offset(left + detectedCorners.topLeft.dx * renderedImageWidth,
-          top + detectedCorners.topLeft.dy * renderedImageHeight),
+      Offset(left + detectedCorners.topLeft.dx * renderedImageWidth, top + detectedCorners.topLeft.dy * renderedImageHeight),
+      Offset(left + detectedCorners.topRight.dx * renderedImageWidth, top + detectedCorners.topRight.dy * renderedImageHeight),
+      Offset(left + detectedCorners.bottomRight.dx * renderedImageWidth, top + (detectedCorners.bottomRight.dy * renderedImageHeight)),
+      Offset(left + detectedCorners.bottomLeft.dx * renderedImageWidth, top + detectedCorners.bottomLeft.dy * renderedImageHeight),
+      Offset(left + detectedCorners.topLeft.dx * renderedImageWidth, top + detectedCorners.topLeft.dy * renderedImageHeight),
     ];
 
     final paint = Paint()

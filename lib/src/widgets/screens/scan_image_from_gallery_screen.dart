@@ -16,8 +16,7 @@ class ScanImageFromGalleryScreen extends StatefulWidget {
   ScanImageFromGalleryScreen({super.key, required this.images});
 
   @override
-  State<ScanImageFromGalleryScreen> createState() =>
-      _ScanImageFromGalleryScreenState();
+  State<ScanImageFromGalleryScreen> createState() => _ScanImageFromGalleryScreenState();
 }
 
 class _ScanImageFromGalleryScreenState
@@ -42,16 +41,15 @@ class _ScanImageFromGalleryScreenState
     final ReceivePort receivePort = ReceivePort();
 
     // Create an isolate to process the image in an isolated environment
-    await Isolate.spawn<ScanImageArguments>(scanCurrentImageIsolated,
-        ScanImageArguments(image, receivePort.sendPort));
+    await Isolate.spawn<ScanImageArguments>(scanCurrentImageIsolated, ScanImageArguments(image, receivePort.sendPort));
 
     // Listen for the returned result from the created isolate
     sub = receivePort.listen((processedImageBytes) async {
       _isLoading = false;
 
       if (processedImageBytes == null) {
-        processedImageBytes =
-            await widget.images[_currentImageIndex].readAsBytes();
+        processedImageBytes = await widget.images[_currentImageIndex].readAsBytes();
+
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text("Aucun document n'a été détecté"),
           backgroundColor: Color(0xffff0f0f),
@@ -70,16 +68,20 @@ class _ScanImageFromGalleryScreenState
     if (_currentImageIndex < imagesNumber - 1) {
       scanCurrentImage(widget.images[_currentImageIndex]);
       setState(() {});
-    } else if (_currentImageIndex == imagesNumber - 1) {
+    }
+    else if (_currentImageIndex == imagesNumber - 1) {
       _isLastImage = true;
       scanCurrentImage(widget.images[_currentImageIndex]);
       setState(() {});
-    } else {
-      Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) =>
-              ScanResultScreen(
-                images: processedImages,
-              )));
+    }
+    else {
+      Navigator.of(context).push(
+          MaterialPageRoute(
+              builder: (context) =>
+                  ScanResultScreen(
+                    images: processedImages,
+                  )
+          ));
     }
   }
 

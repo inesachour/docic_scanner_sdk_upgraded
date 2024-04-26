@@ -1,13 +1,12 @@
 import 'package:document_scanner_ocr/src/widgets/common/image_editing_widgets.dart';
 import 'package:flutter/material.dart';
 
-TextStyle textStyle = const TextStyle(
-    color: Colors.white, decoration: TextDecoration.none, fontSize: 14);
+TextStyle textStyle = const TextStyle(color: Colors.white, decoration: TextDecoration.none, fontSize: 14);
 
-Widget ScanImageHeader(
-    {required BuildContext context,
-    required bool isLoading,
-    required int imageNumber}) {
+Widget ScanImageHeader({
+  required BuildContext context,
+  required bool isLoading,
+  required int imageNumber}) {
   return Container(
     color: Colors.black,
     padding: const EdgeInsets.only(left: 15.0, right: 15.0, top: 25.0),

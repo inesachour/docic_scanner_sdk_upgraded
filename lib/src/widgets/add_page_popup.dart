@@ -50,8 +50,7 @@ class AddPagePopup extends StatelessWidget {
                     Navigator.pop(context, true);
                   },
                   child: Container(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 6.0, horizontal: 35.0),
+                    padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 35.0),
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10.0),
                         border: Border.all(color: const Color(0xff696666))),

@@ -45,8 +45,7 @@ class _CameraScreenState extends State<CameraScreen> {
       } else {
         _cameras = value;
       }
-      _cameraController = CameraController(_cameras[0], ResolutionPreset.max,
-          enableAudio: false);
+      _cameraController = CameraController(_cameras[0], ResolutionPreset.max, enableAudio: false);
       _cameraController!.initialize().then((_) {
         if (!mounted) {
           return;
@@ -56,27 +55,20 @@ class _CameraScreenState extends State<CameraScreen> {
         _cameraController!.startImageStream((image) async {
           skipFrame = (skipFrame + 1) % 5;
           if (skipFrame == 0) {
-            final ffi.Pointer<ffi.Uint8> yData =
-                malloc.allocate<ffi.Uint8>(image.planes[0].bytes.length);
-            final ffi.Pointer<ffi.Uint8> uData =
-                malloc.allocate<ffi.Uint8>(image.planes[1].bytes.length);
-            final ffi.Pointer<ffi.Uint8> vData =
-                malloc.allocate<ffi.Uint8>(image.planes[2].bytes.length);
+            final ffi.Pointer<ffi.Uint8> yData = malloc.allocate<ffi.Uint8>(image.planes[0].bytes.length);
+            final ffi.Pointer<ffi.Uint8> uData = malloc.allocate<ffi.Uint8>(image.planes[1].bytes.length);
+            final ffi.Pointer<ffi.Uint8> vData = malloc.allocate<ffi.Uint8>(image.planes[2].bytes.length);
 
-            final Uint8List yDatapointerList =
-                yData.asTypedList(image.planes[0].bytes.length);
-            final Uint8List uDatapointerList =
-                uData.asTypedList(image.planes[1].bytes.length);
-            final Uint8List vDatapointerList =
-                vData.asTypedList(image.planes[2].bytes.length);
+            final Uint8List yDatapointerList = yData.asTypedList(image.planes[0].bytes.length);
+            final Uint8List uDatapointerList = uData.asTypedList(image.planes[1].bytes.length);
+            final Uint8List vDatapointerList = vData.asTypedList(image.planes[2].bytes.length);
 
             // Copy the Uint8List data to the allocated memory
             yDatapointerList.setAll(0, image.planes[0].bytes);
             uDatapointerList.setAll(0, image.planes[1].bytes);
             vDatapointerList.setAll(0, image.planes[2].bytes);
 
-            ffi.Pointer<ffi.Pointer<ffi.Uint8>> encodedOutputImage =
-                malloc.allocate(8);
+            ffi.Pointer<ffi.Pointer<ffi.Uint8>> encodedOutputImage = malloc.allocate(8);
 
             ScanFrameResult scanFrameResult = scanFrame(
                 yData,
@@ -103,14 +95,14 @@ class _CameraScreenState extends State<CameraScreen> {
 
             if (detectedDocumentFramesNumber == 6) {
               ffi.Pointer<ffi.Uint8> cppPointer = encodedOutputImage[0];
-              Uint8List encodedImageBytes =
-                  cppPointer.asTypedList(scanFrameResult.outputBufferSize);
-              final bool? addAnotherImage =
-                  await Navigator.of(context).push(MaterialPageRoute(
+              Uint8List encodedImageBytes = cppPointer.asTypedList(scanFrameResult.outputBufferSize);
+              final bool? addAnotherImage = await Navigator.of(context).push(
+                  MaterialPageRoute(
                       builder: (context) => ScanImageFromCameraScreen(
-                            image: encodedImageBytes,
-                            imageIndex: processedImages.length,
-                          )));
+                        image: encodedImageBytes,
+                        imageIndex: processedImages.length,
+                      )
+                  ));
 
               if (addAnotherImage != null && addAnotherImage) {
                 processedImages.add(encodedImageBytes);
@@ -158,8 +150,7 @@ class _CameraScreenState extends State<CameraScreen> {
                             setState(() {
                               _isFlashOn = !_isFlashOn;
                               if (_isFlashOn) {
-                                _cameraController!
-                                    .setFlashMode(FlashMode.torch);
+                                _cameraController!.setFlashMode(FlashMode.torch);
                               } else {
                                 _cameraController!.setFlashMode(FlashMode.off);
                               }
@@ -189,8 +180,7 @@ class _CameraScreenState extends State<CameraScreen> {
                           ),
                           color: Colors.black,
                         ),
-                        if (_detectedCorners != null &&
-                            !_detectedCorners!.isEmpty())
+                        if (_detectedCorners != null && !_detectedCorners!.isEmpty())
                           CustomPaint(
                             painter: ContoursPainter(
                               detectedCorners: _detectedCorners!,
@@ -217,11 +207,13 @@ class _CameraScreenState extends State<CameraScreen> {
                             onTap: () async {
                               final images = await pickImagesFromGallery();
                               if (images.isNotEmpty) {
-                                Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) =>
-                                        ScanImageFromGalleryScreen(
-                                          images: images,
-                                        )));
+                                Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            ScanImageFromGalleryScreen(
+                                              images: images,
+                                        )
+                                    ));
                               }
                             },
                             child: const Icon(

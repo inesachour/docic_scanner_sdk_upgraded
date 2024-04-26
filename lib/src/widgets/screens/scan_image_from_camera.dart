@@ -7,12 +7,10 @@ class ScanImageFromCameraScreen extends StatefulWidget {
   Uint8List image;
   int imageIndex;
 
-  ScanImageFromCameraScreen(
-      {super.key, required this.image, required this.imageIndex});
+  ScanImageFromCameraScreen({super.key, required this.image, required this.imageIndex});
 
   @override
-  State<ScanImageFromCameraScreen> createState() =>
-      _ScanImageFromCameraScreenState();
+  State<ScanImageFromCameraScreen> createState() => _ScanImageFromCameraScreenState();
 }
 
 class _ScanImageFromCameraScreenState extends State<ScanImageFromCameraScreen> {
