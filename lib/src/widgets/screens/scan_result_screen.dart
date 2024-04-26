@@ -1,13 +1,15 @@
+import 'dart:convert';
 import 'dart:typed_data';
+import 'package:document_scanner_ocr/document_scanner_ocr.dart';
 import 'package:document_scanner_ocr/src/services/pdf_service.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:pdf/widgets.dart' as pw;
 
 class ScanResultScreen extends StatefulWidget {
   List<Uint8List> images;
+  Function(ScannerResult) onFinish;
 
-  ScanResultScreen({super.key, required this.images});
+  ScanResultScreen({super.key, required this.images, required this.onFinish});
 
   @override
   State<ScanResultScreen> createState() => _ScanResultScreenState();
@@ -39,8 +41,16 @@ class _ScanResultScreenState extends State<ScanResultScreen> {
                   ),
                   GestureDetector(
                     child: Text("Confirmer", style: textStyle,),
-                    onTap: (){
+                    onTap: () async {
                       pw.Document pdf = PdfService.generatePdfFile(widget.images);
+                      List<int> pdfBytes = await pdf.save();
+                      widget.onFinish.call(
+                          ScannerResult(
+                            numberOfPages: widget.images.length,
+                            images: widget.images,
+                            pdfBytes: pdfBytes,
+                          )
+                      );
                     },
                   ),
                 ],
@@ -53,7 +63,7 @@ class _ScanResultScreenState extends State<ScanResultScreen> {
             child: ListView.builder(
                 itemBuilder: (BuildContext context, int index){
                   return Container(
-                    margin: EdgeInsets.symmetric(horizontal: 5, vertical: 3),
+                    margin: EdgeInsets.symmetric(horizontal: 5, vertical: 6),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [

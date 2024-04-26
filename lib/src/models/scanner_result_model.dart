@@ -8,5 +8,5 @@ class ScannerResult {
 
   int numberOfPages;
   List<Uint8List> images;
-  String pdfBytes;
+  List<int> pdfBytes;
 }

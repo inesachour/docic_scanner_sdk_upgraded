@@ -44,6 +44,7 @@ void main() {
       await tester.pumpWidget(MaterialApp(
         home: ScanImageFromGalleryScreen(
           images: mockImages,
+          onFinish: (_){},
         ),
       ));
 
@@ -76,7 +77,9 @@ void main() {
 
     testWidgets('CameraScreen Loading Test', (WidgetTester tester) async {
       await tester.pumpWidget(MaterialApp(
-        home: CameraScreen(),
+        home: CameraScreen(
+          onFinish: (_){},
+        ),
       ));
 
       expect(find.byType(CircularProgressIndicator), findsOneWidget);

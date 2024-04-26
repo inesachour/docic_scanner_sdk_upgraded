@@ -1,6 +1,7 @@
 import 'dart:ffi' as ffi;
 import 'dart:typed_data';
 import 'package:camera/camera.dart';
+import 'package:document_scanner_ocr/document_scanner_ocr.dart';
 import 'package:document_scanner_ocr/src/docic_mobile_sdk.dart';
 import 'package:document_scanner_ocr/src/models/native_communication_models.dart';
 import 'package:document_scanner_ocr/src/widgets/contours_painter.dart';
@@ -11,7 +12,9 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 class CameraScreen extends StatefulWidget {
-  const CameraScreen({super.key});
+  Function(ScannerResult) onFinish;
+
+  CameraScreen({super.key, required this.onFinish});
 
   @override
   State<CameraScreen> createState() => _CameraScreenState();
@@ -104,6 +107,7 @@ class _CameraScreenState extends State<CameraScreen> {
                         image: encodedImageBytes,
                         imageIndex: processedImages.length - 1,
                         processedImages: processedImages,
+                        onFinish: widget.onFinish,
                       )
                   ));
 
@@ -211,6 +215,7 @@ class _CameraScreenState extends State<CameraScreen> {
                                         builder: (context) =>
                                             ScanImageFromGalleryScreen(
                                               images: images,
+                                              onFinish: widget.onFinish,
                                         )
                                     ));
                               }

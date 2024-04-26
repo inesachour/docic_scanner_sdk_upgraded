@@ -4,6 +4,7 @@ import 'dart:io';
 import 'dart:isolate';
 import 'dart:typed_data';
 import 'package:camera/camera.dart';
+import 'package:document_scanner_ocr/document_scanner_ocr.dart';
 import 'package:document_scanner_ocr/src/docic_mobile_sdk.dart';
 import 'package:document_scanner_ocr/src/widgets/common/image_details_widgets.dart';
 import 'package:document_scanner_ocr/src/widgets/screens/scan_result_screen.dart';
@@ -12,8 +13,9 @@ import 'package:flutter/material.dart';
 
 class ScanImageFromGalleryScreen extends StatefulWidget {
   List<XFile> images;
+  Function(ScannerResult) onFinish;
 
-  ScanImageFromGalleryScreen({super.key, required this.images});
+  ScanImageFromGalleryScreen({super.key, required this.images, required this.onFinish});
 
   @override
   State<ScanImageFromGalleryScreen> createState() => _ScanImageFromGalleryScreenState();
@@ -80,6 +82,7 @@ class _ScanImageFromGalleryScreenState
               builder: (context) =>
                   ScanResultScreen(
                     images: processedImages,
+                    onFinish: widget.onFinish,
                   )
           ));
     }
