@@ -4,10 +4,11 @@ import 'package:document_scanner_ocr/src/widgets/common/image_details_widgets.da
 import 'package:flutter/material.dart';
 
 class ScanImageFromCameraScreen extends StatefulWidget {
-  ScanImageFromCameraScreen(
-      {super.key, required this.image, required this.imageIndex});
   Uint8List image;
   int imageIndex;
+
+  ScanImageFromCameraScreen(
+      {super.key, required this.image, required this.imageIndex});
 
   @override
   State<ScanImageFromCameraScreen> createState() =>
