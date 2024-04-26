@@ -1,4 +1,4 @@
-import 'package:document_scanner_ocr/src/widgets/camera_screen.dart';
+import 'package:document_scanner_ocr/src/widgets/screens/camera_screen.dart';
 import 'package:flutter/material.dart';
 
 class DocumentScannerOcr extends StatefulWidget {
