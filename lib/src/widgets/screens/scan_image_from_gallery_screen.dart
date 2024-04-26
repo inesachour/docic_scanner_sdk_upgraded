@@ -6,9 +6,9 @@ import 'dart:typed_data';
 import 'package:camera/camera.dart';
 import 'package:document_scanner_ocr/src/docic_mobile_sdk.dart';
 import 'package:document_scanner_ocr/src/widgets/common/image_details_widgets.dart';
+import 'package:document_scanner_ocr/src/widgets/screens/scan_result_screen.dart';
 import 'package:ffi/ffi.dart';
 import 'package:flutter/material.dart';
-import 'package:pdf/widgets.dart' as pw;
 
 class ScanImageFromGalleryScreen extends StatefulWidget {
   List<XFile> images;
@@ -32,8 +32,6 @@ class _ScanImageFromGalleryScreenState
   int _currentImageIndex = 0;
   bool _isLoading = true;
   List<Uint8List> processedImages = [];
-
-  final pdf = pw.Document(); //pdf document
 
   Future<void> scanCurrentImage(XFile image) async {
     setState(() {
@@ -62,13 +60,6 @@ class _ScanImageFromGalleryScreenState
       }
 
       processedImages.add(processedImageBytes);
-      pdf.addPage(pw.Page(build: (pw.Context context) {
-        return pw.FullPage(
-          ignoreMargins: true,
-          child: pw.Image(pw.MemoryImage(processedImageBytes),
-              fit: pw.BoxFit.fitHeight),
-        );
-      }));
       setState(() {});
     });
   }
@@ -84,17 +75,11 @@ class _ScanImageFromGalleryScreenState
       scanCurrentImage(widget.images[_currentImageIndex]);
       setState(() {});
     } else {
-      //TODO SAVE PDF or SHOW IT for confirmation
-      String directory = "/storage/emulated/0/Download/";
-      bool dirDownloadExists = await Directory(directory).exists();
-      if (dirDownloadExists) {
-        directory = "/storage/emulated/0/Download";
-      } else {
-        directory = "/storage/emulated/0/Downloads";
-      }
-      final file = File("$directory/example.pdf");
-      await file.writeAsBytes(await pdf.save());
-      Navigator.pop(context);
+      Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) =>
+              ScanResultScreen(
+                images: processedImages,
+              )));
     }
   }
 
