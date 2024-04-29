@@ -6,6 +6,7 @@ import 'dart:typed_data';
 import 'package:camera/camera.dart';
 import 'package:document_scanner_ocr/document_scanner_ocr.dart';
 import 'package:document_scanner_ocr/src/docic_mobile_sdk.dart';
+import 'package:document_scanner_ocr/src/services/image_editing_service.dart';
 import 'package:document_scanner_ocr/src/widgets/common/image_details_widgets.dart';
 import 'package:document_scanner_ocr/src/widgets/screens/scan_result_screen.dart';
 import 'package:ffi/ffi.dart';
@@ -88,6 +89,15 @@ class _ScanImageFromGalleryScreenState
     }
   }
 
+  void cropImage() async {
+    Uint8List? result = await ImageEditingService.cropImage(processedImages[_currentImageIndex]);
+    if(result != null){
+      setState(() {
+        processedImages[_currentImageIndex] = result;
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -153,6 +163,7 @@ class _ScanImageFromGalleryScreenState
               onNextButtonClick: onNextButtonClick,
               imagesNumber: imagesNumber,
               isLastImage: _isLastImage,
+              cropImage: cropImage,
             ),
           ),
         ],

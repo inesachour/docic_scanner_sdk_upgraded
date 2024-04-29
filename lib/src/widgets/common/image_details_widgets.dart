@@ -42,14 +42,15 @@ Widget ScanImageFromGalleryFooter(
     {required bool isLoading,
     required VoidCallback onNextButtonClick,
     required int imagesNumber,
-    required bool isLastImage}) {
+    required bool isLastImage,
+    required VoidCallback cropImage}) {
   return Container(
     color: Colors.black,
     child: Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        if (!isLoading) ImageCropper(),
+        if (!isLoading) ImageCropper(cropImage: cropImage),
         if (!isLoading) ImageRotator(),
         if (!isLoading)
           GestureDetector(
@@ -65,14 +66,16 @@ Widget ScanImageFromGalleryFooter(
   );
 }
 
-Widget ScanImageFromCameraFooter({required VoidCallback onNextButtonClick}) {
+Widget ScanImageFromCameraFooter(
+    {required VoidCallback onNextButtonClick,
+      required VoidCallback cropImage}) {
   return Container(
     color: Colors.black,
     child: Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        ImageCropper(),
+        ImageCropper(cropImage: cropImage),
         ImageRotator(),
         GestureDetector(
           onTap: onNextButtonClick,

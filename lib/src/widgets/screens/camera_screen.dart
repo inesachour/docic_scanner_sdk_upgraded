@@ -104,7 +104,6 @@ class _CameraScreenState extends State<CameraScreen> {
               await Navigator.of(context).push(
                   MaterialPageRoute(
                       builder: (context) => ScanImageFromCameraScreen(
-                        image: encodedImageBytes,
                         imageIndex: processedImages.length - 1,
                         processedImages: processedImages,
                         onFinish: widget.onFinish,

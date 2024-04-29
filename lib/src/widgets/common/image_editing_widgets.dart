@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-Widget ImageCropper() {
+Widget ImageCropper({required VoidCallback cropImage}) {
   return GestureDetector(
-    onTap: () {},
+    onTap: cropImage,
     child: const Icon(
       Icons.crop,
       color: Colors.white,
