@@ -47,6 +47,15 @@ class _ScanImageFromCameraScreenState extends State<ScanImageFromCameraScreen> {
     }
   }
 
+  void rotateImage() async {
+    Uint8List? result = await ImageEditingService.rotateImage(widget.processedImages[widget.imageIndex]);
+    if(result != null){
+      setState(() {
+        widget.processedImages[widget.imageIndex] = result;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,6 +79,7 @@ class _ScanImageFromCameraScreenState extends State<ScanImageFromCameraScreen> {
             child: ScanImageFromCameraFooter(
               onNextButtonClick: onNextButtonClick,
               cropImage: cropImage,
+              rotateImage: rotateImage
             ),
           ),
         ],
