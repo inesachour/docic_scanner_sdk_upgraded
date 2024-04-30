@@ -31,20 +31,18 @@ class _ScannerOcrScreenState extends State<ScannerOcrScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        child: DocumentScannerOcr(
-          onFinish: (ScannerResult scannerResult) async{
-            String directory = "/storage/emulated/0/Download/";
-            bool dirDownloadExists = await Directory(directory).exists();
-            if (dirDownloadExists) {
-              directory = "/storage/emulated/0/Download";
-            } else {
-              directory = "/storage/emulated/0/Downloads";
-            }
-            final file = File("$directory/testWOW.pdf");
-            await file.writeAsBytes(scannerResult.pdfBytes);
-          },
-        ),
+      body: DocumentScannerOcr(
+        onFinish: (ScannerResult scannerResult) async{
+          String directory = "/storage/emulated/0/Download/";
+          bool dirDownloadExists = await Directory(directory).exists();
+          if (dirDownloadExists) {
+            directory = "/storage/emulated/0/Download";
+          } else {
+            directory = "/storage/emulated/0/Downloads";
+          }
+          final file = File("$directory/testWOW.pdf");
+          await file.writeAsBytes(scannerResult.pdfBytes);
+        },
       ),
     );
   }

@@ -98,6 +98,15 @@ class _ScanImageFromGalleryScreenState
     }
   }
 
+  void rotateImage() async {
+    Uint8List? result = await ImageEditingService.rotateImage(processedImages[_currentImageIndex]);
+    if(result != null){
+      setState(() {
+        processedImages[_currentImageIndex] = result;
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -164,6 +173,7 @@ class _ScanImageFromGalleryScreenState
               imagesNumber: imagesNumber,
               isLastImage: _isLastImage,
               cropImage: cropImage,
+              rotateImage: rotateImage,
             ),
           ),
         ],

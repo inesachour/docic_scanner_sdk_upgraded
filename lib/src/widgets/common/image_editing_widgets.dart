@@ -10,9 +10,9 @@ Widget ImageCropper({required VoidCallback cropImage}) {
   );
 }
 
-Widget ImageRotator() {
+Widget ImageRotator({required VoidCallback rotateImage}) {
   return GestureDetector(
-    onTap: () {},
+    onTap: rotateImage,
     child: const Icon(
       Icons.rotate_right,
       color: Colors.white,
