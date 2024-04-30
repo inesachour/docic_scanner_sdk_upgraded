@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-Widget ImageCropper() {
+Widget ImageCropper({required VoidCallback cropImage}) {
   return GestureDetector(
-    onTap: () {},
+    onTap: cropImage,
     child: const Icon(
       Icons.crop,
       color: Colors.white,
@@ -10,9 +10,9 @@ Widget ImageCropper() {
   );
 }
 
-Widget ImageRotator() {
+Widget ImageRotator({required VoidCallback rotateImage}) {
   return GestureDetector(
-    onTap: () {},
+    onTap: rotateImage,
     child: const Icon(
       Icons.rotate_right,
       color: Colors.white,
