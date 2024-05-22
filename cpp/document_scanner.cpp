@@ -1,11 +1,7 @@
 #include "document_scanner.h"
 
-int DocumentScanner::detectedDocumentFrames;
-
 DocumentScanner::DocumentScanner()
-{
-    DocumentScanner::detectedDocumentFrames = 0;
-}
+{}
 
 // Preprocess the input image for document scanning
 Mat DocumentScanner::preprocessImage(const Mat& image)
@@ -81,21 +77,38 @@ vector<Point> DocumentScanner::findCorners(const vector<vector<Point>>& contours
     return orderedCorners;
 }
 
+// Calculate the centroid of a set of points
+Point DocumentScanner::computeCentroid(const vector<Point>& points)
+{
+    Point centroid;
+    for (const Point& pt : points) {
+        centroid += pt;
+    }
+    centroid.x /= points.size();
+    centroid.y /= points.size();
+    return centroid;
+}
+
 // Order four points in a clockwise direction
 vector<Point> DocumentScanner::orderPoints(const vector<Point>& points)
 {
     vector<Point> rect(4);
     vector<Point> sortedPts = points;
 
-    // Sort the points based on the sum of x and y coordinates
-    sort(sortedPts.begin(), sortedPts.end(), [](const Point& p1, const Point& p2) {
-        return (p1.x + p1.y) < (p2.x + p2.y);
+    Point centroid = computeCentroid(points);
+
+    // Sort points based on angle relative to centroid
+    sort(sortedPts.begin(), sortedPts.end(), [&centroid](const Point& p1, const Point& p2) {
+        double angle1 = atan2(p1.y - centroid.y, p1.x - centroid.x);
+        double angle2 = atan2(p2.y - centroid.y, p2.x - centroid.x);
+        return angle1 < angle2;
     });
 
+    // Assign sorted points to the rectangle in clockwise order
     rect[0] = sortedPts[0];
-    rect[2] = sortedPts[3];
     rect[1] = sortedPts[1];
-    rect[3] = sortedPts[2];
+    rect[2] = sortedPts[2];
+    rect[3] = sortedPts[3];
 
     return rect;
 }
