@@ -1,5 +1,6 @@
 #include <opencv2/opencv.hpp>
 #include "document_scanner.h"
+#include "tesseract_ocr.h"
 
 using namespace cv;
 using namespace std;
@@ -17,6 +18,12 @@ extern "C" {
     struct ScanFrameResult scanFromLiveCamera(uint8_t* y, uint8_t* u, uint8_t* v, int height, int width, int bytesPerRow, int bytesPerPixel, bool isDocumentDetected, uchar** encodedOutput) {
         DocumentScanner documentScanner = DocumentScanner();
         return documentScanner.scanFrame(y, u, v, height, width, bytesPerRow, bytesPerPixel, isDocumentDetected, encodedOutput);
+    }
+
+    __attribute__((visibility("default"))) __attribute__((used))
+    int getOrientation(char* path) {
+        TesseractOCR ocr = TesseractOCR();
+        return ocr.detectRotationAngle(path);
     }
 
 }

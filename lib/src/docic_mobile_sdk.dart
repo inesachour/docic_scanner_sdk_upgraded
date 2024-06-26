@@ -16,6 +16,7 @@ typedef _scan_frame_func = NativeScanFrameResult Function(
     ffi.Int32 bytesPerPixel,
     ffi.Bool isDocumentDetected,
     ffi.Pointer<ffi.Pointer<ffi.Uint8>> encodedOutput);
+typedef _get_orientation_func = ffi.Int32 Function(ffi.Pointer<Utf8> path);
 
 // Dart function signatures
 typedef _ScanImageFunc = int Function(ffi.Pointer<Utf8> path, ffi.Pointer<ffi.Pointer<ffi.Uint8>> encodedOutput);
@@ -29,6 +30,7 @@ typedef _ScanFrameFunc = NativeScanFrameResult Function(
     int bytesPerPixel,
     bool isDocumentDetected,
     ffi.Pointer<ffi.Pointer<ffi.Uint8>> encodedOutput);
+typedef _GetOrientation = int Function(ffi.Pointer<Utf8> path);
 
 // Getting the library
 ffi.DynamicLibrary _lib = Platform.isAndroid
@@ -38,6 +40,7 @@ ffi.DynamicLibrary _lib = Platform.isAndroid
 // Looking for the functions
 final _ScanImageFunc _scanImage = _lib.lookupFunction<_scan_image_func, _ScanImageFunc>('scanFromImage');
 final _ScanFrameFunc _scanFrame = _lib.lookupFunction<_scan_frame_func, _ScanFrameFunc>('scanFromLiveCamera');
+final _GetOrientation _getOrientation = _lib.lookupFunction<_get_orientation_func, _GetOrientation>('getOrientation');
 
 int scanImage(String path, ffi.Pointer<ffi.Pointer<ffi.Uint8>> encodedOutput) {
   return _scanImage(path.toNativeUtf8(), encodedOutput);
@@ -68,4 +71,8 @@ ScanFrameResult scanFrame(
   return ScanFrameResult(
       corners: detectedCorners,
       outputBufferSize: nativeScanFrameResult.outputBufferSize);
+}
+
+int getDocumentOrientation(String path){
+  return _getOrientation(path.toNativeUtf8());
 }
