@@ -27,8 +27,6 @@ struct ScanFrameResult {
 };
 
 class DocumentScanner {
-private:
-    static int detectedDocumentFrames;
 public:
     DocumentScanner();
     static Mat preprocessImage(const Mat& image);
