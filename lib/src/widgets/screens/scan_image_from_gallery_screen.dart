@@ -11,6 +11,8 @@ import 'package:document_scanner_ocr/src/widgets/common/image_details_widgets.da
 import 'package:document_scanner_ocr/src/widgets/screens/scan_result_screen.dart';
 import 'package:ffi/ffi.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:path_provider/path_provider.dart';
 
 class ScanImageFromGalleryScreen extends StatefulWidget {
   List<XFile> images;
@@ -44,6 +46,15 @@ class _ScanImageFromGalleryScreenState
     final ReceivePort receivePort = ReceivePort();
 
     // Create an isolate to process the image in an isolated environment
+
+    final directory = await getApplicationDocumentsDirectory();
+    const String assetPath = "assets/tessdata/ara.traineddata";
+    final ByteData data = await rootBundle.load(assetPath);
+
+    final String targetPath = "${directory.path}/ara.traineddata";
+    final File file = File(targetPath);
+    await file.writeAsBytes(data.buffer.asUint8List());
+
     await Isolate.spawn<ScanImageArguments>(scanCurrentImageIsolated, ScanImageArguments(image, receivePort.sendPort));
 
     // Listen for the returned result from the created isolate

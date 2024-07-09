@@ -27,14 +27,14 @@ class MockAvailableCameras extends Mock {
 
 void main() {
   late List<XFile> mockImages = [
-    XFile('images/tests/document1.jpg'),
-    XFile('images/tests/document1.jpg'),
+    XFile('assets/images/tests/document1.jpg'),
+    XFile('assets/images/tests/document1.jpg'),
   ];
 
   setUpAll(() {
     mockImages = [
-      XFile('images/tests/document1.jpg'),
-      XFile('images/tests/document1.jpg'),
+      XFile('assets/images/tests/document1.jpg'),
+      XFile('assets/images/tests/document1.jpg'),
     ];
   });
 
