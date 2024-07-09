@@ -5,7 +5,7 @@ import 'package:document_scanner_ocr/src/models/native_communication_models.dart
 import 'package:ffi/ffi.dart';
 
 // C function signatures
-typedef _scan_image_func = ffi.Int32 Function(ffi.Pointer<Utf8> path, ffi.Pointer<ffi.Pointer<ffi.Uint8>> encodedOutput);
+typedef _scan_image_func = ffi.Int32 Function(ffi.Pointer<Utf8> path, ffi.Pointer<Utf8> dataPath, ffi.Pointer<ffi.Pointer<ffi.Uint8>> encodedOutput);
 typedef _scan_frame_func = NativeScanFrameResult Function(
     ffi.Pointer<ffi.Uint8> y,
     ffi.Pointer<ffi.Uint8> u,
@@ -15,11 +15,11 @@ typedef _scan_frame_func = NativeScanFrameResult Function(
     ffi.Int32 bytesPerRow,
     ffi.Int32 bytesPerPixel,
     ffi.Bool isDocumentDetected,
+    ffi.Pointer<Utf8> dataPath,
     ffi.Pointer<ffi.Pointer<ffi.Uint8>> encodedOutput);
-typedef _get_orientation_func = ffi.Int32 Function(ffi.Pointer<Utf8> imagePath, ffi.Pointer<Utf8> dataPath);
 
 // Dart function signatures
-typedef _ScanImageFunc = int Function(ffi.Pointer<Utf8> path, ffi.Pointer<ffi.Pointer<ffi.Uint8>> encodedOutput);
+typedef _ScanImageFunc = int Function(ffi.Pointer<Utf8> path, ffi.Pointer<Utf8> dataPath, ffi.Pointer<ffi.Pointer<ffi.Uint8>> encodedOutput);
 typedef _ScanFrameFunc = NativeScanFrameResult Function(
     ffi.Pointer<ffi.Uint8> y,
     ffi.Pointer<ffi.Uint8> u,
@@ -29,8 +29,8 @@ typedef _ScanFrameFunc = NativeScanFrameResult Function(
     int bytesPerRow,
     int bytesPerPixel,
     bool isDocumentDetected,
+    ffi.Pointer<Utf8> dataPath,
     ffi.Pointer<ffi.Pointer<ffi.Uint8>> encodedOutput);
-typedef _GetOrientation = int Function(ffi.Pointer<Utf8> imagePath, ffi.Pointer<Utf8> dataPath);
 
 // Getting the library
 ffi.DynamicLibrary _lib = Platform.isAndroid
@@ -40,10 +40,9 @@ ffi.DynamicLibrary _lib = Platform.isAndroid
 // Looking for the functions
 final _ScanImageFunc _scanImage = _lib.lookupFunction<_scan_image_func, _ScanImageFunc>('scanFromImage');
 final _ScanFrameFunc _scanFrame = _lib.lookupFunction<_scan_frame_func, _ScanFrameFunc>('scanFromLiveCamera');
-final _GetOrientation _getOrientation = _lib.lookupFunction<_get_orientation_func, _GetOrientation>('getOrientation');
 
-int scanImage(String path, ffi.Pointer<ffi.Pointer<ffi.Uint8>> encodedOutput) {
-  return _scanImage(path.toNativeUtf8(), encodedOutput);
+int scanImage(String path, String dataPath, ffi.Pointer<ffi.Pointer<ffi.Uint8>> encodedOutput) {
+  return _scanImage(path.toNativeUtf8(), dataPath.toNativeUtf8(), encodedOutput);
 }
 
 ScanFrameResult scanFrame(
@@ -55,9 +54,10 @@ ScanFrameResult scanFrame(
     int bytesPerRow,
     int bytesPerPixel,
     bool isDocumentDetected,
+    String dataPath,
     ffi.Pointer<ffi.Pointer<ffi.Uint8>> encodedOutput) {
   NativeScanFrameResult nativeScanFrameResult = _scanFrame(y, u, v, height,
-      width, bytesPerRow, bytesPerPixel, isDocumentDetected, encodedOutput);
+      width, bytesPerRow, bytesPerPixel, isDocumentDetected, dataPath.toNativeUtf8(), encodedOutput);
   DetectedCorners detectedCorners = DetectedCorners(
     topLeft: Offset(nativeScanFrameResult.corners.topLeft.x,
         nativeScanFrameResult.corners.topLeft.y),
@@ -71,8 +71,4 @@ ScanFrameResult scanFrame(
   return ScanFrameResult(
       corners: detectedCorners,
       outputBufferSize: nativeScanFrameResult.outputBufferSize);
-}
-
-int getDocumentOrientation(String imagePath, String dataPath){
-  return _getOrientation(imagePath.toNativeUtf8(), dataPath.toNativeUtf8());
 }

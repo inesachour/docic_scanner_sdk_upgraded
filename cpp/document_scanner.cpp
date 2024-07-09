@@ -219,12 +219,12 @@ ScanFrameResult DocumentScanner::createScanFrameResult(Coordinate topLeft, Coord
 }
 
 // Function that returns the detected corners and the buffer length if a document is detected (after a certain number of frames)
-ScanFrameResult DocumentScanner::scanFrame(uint8_t* y, uint8_t* u, uint8_t* v, int height, int width, int bytesPerRow, int bytesPerPixel, bool isDocumentDetected, uchar** encodedOutput)
+ScanFrameResult DocumentScanner::scanFrame(uint8_t* y, uint8_t* u, uint8_t* v, int height, int width, int bytesPerRow, int bytesPerPixel, bool isDocumentDetected, char* dataPath, uchar** encodedOutput)
 {
     Mat image = convertYUVtoRGB(y, u, v, height, width, bytesPerRow, bytesPerPixel);
 
     if (image.empty()) {
-        return createScanFrameResult(createCoordinate(0,0), createCoordinate(0, 0), createCoordinate(0, 0), createCoordinate(0, 0), 0);
+        return createScanFrameResult(createCoordinate(0, 0), createCoordinate(0, 0), createCoordinate(0, 0), createCoordinate(0, 0), 0);
     }
 
     struct DetectedCorners coordinate;
@@ -243,6 +243,11 @@ ScanFrameResult DocumentScanner::scanFrame(uint8_t* y, uint8_t* u, uint8_t* v, i
 
     if (isDocumentDetected) {
         Mat result = transformAndCropImage(image, orderedCorners);
+
+        TesseractOCR ocr = TesseractOCR();
+        int rotationAngle = ocr.detectRotationAngle(result,dataPath);
+        result = rotateImage(result, rotationAngle);
+
         imencode(".jpg", result, buf);
         *encodedOutput = (unsigned char*)malloc(buf.size());
         for (int i = 0; i < buf.size(); i++)
@@ -305,7 +310,7 @@ Mat DocumentScanner::convertYUVtoRGB(uint8_t* y, uint8_t* u, uint8_t* v, int hei
 }
 
 // Function to scan an entire image and return the transformed and cropped document
-int DocumentScanner::scanImage(char* path, uchar** encodedOutput)
+int DocumentScanner::scanImage(char* path, char* dataPath, uchar** encodedOutput)
 {
     Mat image = imread(path);
 
@@ -323,10 +328,32 @@ int DocumentScanner::scanImage(char* path, uchar** encodedOutput)
     }
     else {
         Mat result = transformAndCropImage(image, orderedCorners);
+
+        TesseractOCR ocr = TesseractOCR();
+        int rotationAngle = ocr.detectRotationAngle(result, dataPath);
+        result = rotateImage(result, rotationAngle);
+
         imencode(".jpg", result, buf);
         *encodedOutput = (unsigned char*)malloc(buf.size());
         for (int i = 0; i < buf.size(); i++)
             (*encodedOutput)[i] = buf[i];
         return (int)buf.size();
     }
+}
+
+Mat DocumentScanner::rotateImage(Mat image, int angle)
+{
+    Mat result = image;
+
+    if (angle == 90) {
+        rotate(image, image, ROTATE_90_CLOCKWISE);
+    }
+    else if (angle == 180) {
+        rotate(image, image, ROTATE_180);
+    }
+    else if (angle == 270) {
+        rotate(image, image, ROTATE_90_COUNTERCLOCKWISE);
+    }
+
+    return result;
 }

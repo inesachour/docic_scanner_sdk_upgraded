@@ -23,7 +23,7 @@ class TessdataService{
 
     for (var file in files["files"]) {
       File tessdataFile = File('$saveDirectory/$file');
-      if (!await file.exists()) {
+      if (!await tessdataFile.exists()) {
         final ByteData data = await rootBundle.load('$tessDataFilesPath/$file');
         final Uint8List bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes,);
         await tessdataFile.writeAsBytes(bytes);

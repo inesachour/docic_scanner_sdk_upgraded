@@ -11,6 +11,6 @@ using namespace std;
 class TesseractOCR {
 public:
     TesseractOCR();
-    static string extractText(const char* imagePath);
-    static int detectRotationAngle(const char* imagePath, const char* dataPath);
+    static string extractText(const char* imagePath, char* dataPath);
+    static int detectRotationAngle(Mat image, char* dataPath);
 };

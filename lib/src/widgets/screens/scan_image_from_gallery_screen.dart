@@ -13,7 +13,6 @@ import 'package:document_scanner_ocr/src/widgets/screens/scan_result_screen.dart
 import 'package:ffi/ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:path_provider/path_provider.dart';
 
 class ScanImageFromGalleryScreen extends StatefulWidget {
   List<XFile> images;
@@ -200,10 +199,7 @@ void scanCurrentImageIsolated(ScanImageArguments args) {
   Pointer<Pointer<Uint8>> encodedOutputImage = malloc.allocate(8);
 
   // Call the C++ function to scan the image and obtain the length of the encoded image
-  int encodedImageLength = scanImage(args.image.path, encodedOutputImage);
-
-  int res = getDocumentOrientation(args.image.path, args.dataPath);
-  print("zammara $res");
+  int encodedImageLength = scanImage(args.image.path, args.dataPath, encodedOutputImage);
 
   if (encodedImageLength == 0) {
     args.sendPort.send(null);

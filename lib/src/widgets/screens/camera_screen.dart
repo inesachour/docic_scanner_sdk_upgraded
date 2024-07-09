@@ -4,6 +4,7 @@ import 'package:camera/camera.dart';
 import 'package:document_scanner_ocr/document_scanner_ocr.dart';
 import 'package:document_scanner_ocr/src/docic_mobile_sdk.dart';
 import 'package:document_scanner_ocr/src/models/native_communication_models.dart';
+import 'package:document_scanner_ocr/src/services/tessdata_service.dart';
 import 'package:document_scanner_ocr/src/widgets/contours_painter.dart';
 import 'package:document_scanner_ocr/src/widgets/screens/scan_image_from_camera.dart';
 import 'package:document_scanner_ocr/src/widgets/screens/scan_image_from_gallery_screen.dart';
@@ -73,6 +74,8 @@ class _CameraScreenState extends State<CameraScreen> {
 
             ffi.Pointer<ffi.Pointer<ffi.Uint8>> encodedOutputImage = malloc.allocate(8);
 
+            String dataPath = await TessdataService.copyTessdataFile();
+
             ScanFrameResult scanFrameResult = scanFrame(
                 yData,
                 uData,
@@ -82,6 +85,7 @@ class _CameraScreenState extends State<CameraScreen> {
                 image.planes[1].bytesPerRow,
                 image.planes[1].bytesPerPixel ?? 0,
                 _detectedCorners != null && !_detectedCorners!.isEmpty(),
+                dataPath,
                 encodedOutputImage);
 
             setState(() {

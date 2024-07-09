@@ -3,6 +3,7 @@
 #include <opencv2/imgproc.hpp>
 #include <opencv2/calib3d.hpp>
 #include <iostream>
+#include "tesseract_ocr.h"
 
 using namespace cv;
 using namespace std;
@@ -38,7 +39,8 @@ public:
     static Mat transformAndCropImage(const Mat& image, const vector<Point>& orderedCorners);
     static struct Coordinate createCoordinate(double x, double y);
     static struct ScanFrameResult createScanFrameResult(Coordinate topLeft, Coordinate topRight, Coordinate bottomLeft, Coordinate bottomRight, int detectedDocumentSize);
-    static struct ScanFrameResult scanFrame(uint8_t* y, uint8_t* u, uint8_t* v, int height, int width, int bytesPerRow, int bytesPerPixel, bool isDocumentDetected, uchar** encodedOutput);
+    static struct ScanFrameResult scanFrame(uint8_t* y, uint8_t* u, uint8_t* v, int height, int width, int bytesPerRow, int bytesPerPixel, bool isDocumentDetected, char* dataPath, uchar** encodedOutput);
     static Mat convertYUVtoRGB(uint8_t* y, uint8_t* u, uint8_t* v, int height, int width, int bytesPerRow, int bytesPerPixel);
-    static int scanImage(char* path, uchar** encodedOutput);
+    static int scanImage(char* path, char* dataPath, uchar** encodedOutput);
+    static Mat rotateImage(Mat image, int angle);
 };
