@@ -21,9 +21,9 @@ extern "C" {
     }
 
     __attribute__((visibility("default"))) __attribute__((used))
-    int getOrientation(char* path) {
+    int getOrientation(char* imagePath, char* dataPath) {
         TesseractOCR ocr = TesseractOCR();
-        return ocr.detectRotationAngle(path);
+        return ocr.detectRotationAngle(imagePath, dataPath);
     }
 
 }

@@ -43,14 +43,14 @@ string TesseractOCR::extractText(const char* imagePath)
 	return outText;
 }
 
-int TesseractOCR::detectRotationAngle(const char* imagePath)
+int TesseractOCR::detectRotationAngle(const char* imagePath, const char* dataPath)
 {
 	Mat image = imread(imagePath);
 
 	tesseract::TessBaseAPI* api = new tesseract::TessBaseAPI();
-	if (api->Init(NULL, "eng+ara+fra", tesseract::OEM_LSTM_ONLY)) {
+	if (api->Init(dataPath, "eng+ara+fra", tesseract::OEM_LSTM_ONLY)) {
 		std::cerr << "Could not initialize tesseract.\n";
-		return 0;
+		return -55;
 	}
 
 	api->SetPageSegMode(tesseract::PSM_AUTO_OSD);

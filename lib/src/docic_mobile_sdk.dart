@@ -16,7 +16,7 @@ typedef _scan_frame_func = NativeScanFrameResult Function(
     ffi.Int32 bytesPerPixel,
     ffi.Bool isDocumentDetected,
     ffi.Pointer<ffi.Pointer<ffi.Uint8>> encodedOutput);
-typedef _get_orientation_func = ffi.Int32 Function(ffi.Pointer<Utf8> path);
+typedef _get_orientation_func = ffi.Int32 Function(ffi.Pointer<Utf8> imagePath, ffi.Pointer<Utf8> dataPath);
 
 // Dart function signatures
 typedef _ScanImageFunc = int Function(ffi.Pointer<Utf8> path, ffi.Pointer<ffi.Pointer<ffi.Uint8>> encodedOutput);
@@ -30,7 +30,7 @@ typedef _ScanFrameFunc = NativeScanFrameResult Function(
     int bytesPerPixel,
     bool isDocumentDetected,
     ffi.Pointer<ffi.Pointer<ffi.Uint8>> encodedOutput);
-typedef _GetOrientation = int Function(ffi.Pointer<Utf8> path);
+typedef _GetOrientation = int Function(ffi.Pointer<Utf8> imagePath, ffi.Pointer<Utf8> dataPath);
 
 // Getting the library
 ffi.DynamicLibrary _lib = Platform.isAndroid
@@ -73,6 +73,6 @@ ScanFrameResult scanFrame(
       outputBufferSize: nativeScanFrameResult.outputBufferSize);
 }
 
-int getDocumentOrientation(String path){
-  return _getOrientation(path.toNativeUtf8());
+int getDocumentOrientation(String imagePath, String dataPath){
+  return _getOrientation(imagePath.toNativeUtf8(), dataPath.toNativeUtf8());
 }

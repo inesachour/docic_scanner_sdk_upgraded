@@ -7,6 +7,7 @@ import 'package:camera/camera.dart';
 import 'package:document_scanner_ocr/document_scanner_ocr.dart';
 import 'package:document_scanner_ocr/src/docic_mobile_sdk.dart';
 import 'package:document_scanner_ocr/src/services/image_editing_service.dart';
+import 'package:document_scanner_ocr/src/services/tessdata_service.dart';
 import 'package:document_scanner_ocr/src/widgets/common/image_details_widgets.dart';
 import 'package:document_scanner_ocr/src/widgets/screens/scan_result_screen.dart';
 import 'package:ffi/ffi.dart';
@@ -46,7 +47,8 @@ class _ScanImageFromGalleryScreenState
     final ReceivePort receivePort = ReceivePort();
 
     // Create an isolate to process the image in an isolated environment
-    await Isolate.spawn<ScanImageArguments>(scanCurrentImageIsolated, ScanImageArguments(image, receivePort.sendPort));
+    String dataPath = await TessdataService.copyTessdataFile();
+    await Isolate.spawn<ScanImageArguments>(scanCurrentImageIsolated, ScanImageArguments(image, receivePort.sendPort, dataPath));
 
     // Listen for the returned result from the created isolate
     sub = receivePort.listen((processedImageBytes) async {
@@ -187,8 +189,9 @@ class _ScanImageFromGalleryScreenState
 class ScanImageArguments {
   final XFile image;
   final SendPort sendPort;
+  final String dataPath;
 
-  ScanImageArguments(this.image, this.sendPort);
+  ScanImageArguments(this.image, this.sendPort, this.dataPath);
 }
 
 // Function that will be executing in the created isolate
@@ -198,6 +201,9 @@ void scanCurrentImageIsolated(ScanImageArguments args) {
 
   // Call the C++ function to scan the image and obtain the length of the encoded image
   int encodedImageLength = scanImage(args.image.path, encodedOutputImage);
+
+  int res = getDocumentOrientation(args.image.path, args.dataPath);
+  print("zammara $res");
 
   if (encodedImageLength == 0) {
     args.sendPort.send(null);
