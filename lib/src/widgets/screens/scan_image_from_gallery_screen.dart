@@ -46,15 +46,6 @@ class _ScanImageFromGalleryScreenState
     final ReceivePort receivePort = ReceivePort();
 
     // Create an isolate to process the image in an isolated environment
-
-    final directory = await getApplicationDocumentsDirectory();
-    const String assetPath = "assets/tessdata/ara.traineddata";
-    final ByteData data = await rootBundle.load(assetPath);
-
-    final String targetPath = "${directory.path}/ara.traineddata";
-    final File file = File(targetPath);
-    await file.writeAsBytes(data.buffer.asUint8List());
-
     await Isolate.spawn<ScanImageArguments>(scanCurrentImageIsolated, ScanImageArguments(image, receivePort.sendPort));
 
     // Listen for the returned result from the created isolate
