@@ -4,8 +4,8 @@ This package includes a document scanner implemented using OpenCV, with an autom
 
 ## I- How to use the package? ##
 ### 1- Adding language data files ###
-Create a folder named 'assets' in the root of your project, and inside it, create another folder named 'tessdata'. 
-Then, place the language data files that you need into the 'tessdata' folder.
+Create a folder named **assets** in the root of your project, and inside it, create another folder named **tessdata**. 
+Then, place the language data files that you need into the **tessdata** folder.
 
 ### 2- Creating tessdata_config.json file ###
 Create a file named tessdata_config.json inside the assets folder. 
@@ -35,10 +35,10 @@ DocumentScannerOcr(
 ```
 
 ## II- What does the package return? ##
-The package returns a 'ScannerResult' class that contains 3 parameters.
+The package returns a **ScannerResult** class that contains 3 parameters.
 
-- pdfBytes:  A list of bytes representing the generated PDF including all scanned images (List<int>).
+- **pdfBytes**:  A list of bytes representing the generated PDF including all scanned images (List<int>).
 
-- images: A list of the scanned images (List<Uint8List>).
+- **images**: A list of the scanned images (List<Uint8List>).
 
-- numberOfPages: The total number of pages in the document.
+- **numberOfPages**: The total number of pages in the document.
