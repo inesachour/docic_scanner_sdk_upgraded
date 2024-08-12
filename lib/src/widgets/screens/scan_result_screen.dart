@@ -2,6 +2,7 @@ import 'dart:typed_data';
 import 'package:document_scanner_ocr/document_scanner_ocr.dart';
 import 'package:document_scanner_ocr/src/services/pdf_service.dart';
 import 'package:document_scanner_ocr/src/utils/scanned_images_manager.dart';
+import 'package:document_scanner_ocr/src/widgets/screens/camera_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:pdf/widgets.dart' as pw;
 

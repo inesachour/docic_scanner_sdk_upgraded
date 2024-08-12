@@ -7,11 +7,10 @@ import 'package:document_scanner_ocr/src/widgets/screens/scan_result_screen.dart
 import 'package:flutter/material.dart';
 
 class ScanImageFromCameraScreen extends StatefulWidget {
-  int imageIndex;
-  List<Uint8List> processedImages;
+  Uint8List processedImage;
   Function(ScannerResult) onFinish;
 
-  ScanImageFromCameraScreen({super.key, required this.imageIndex, required this.processedImages, required this.onFinish});
+  ScanImageFromCameraScreen({super.key, required this.processedImage, required this.onFinish});
 
   @override
   State<ScanImageFromCameraScreen> createState() => _ScanImageFromCameraScreenState();
@@ -32,28 +31,26 @@ class _ScanImageFromCameraScreenState extends State<ScanImageFromCameraScreen> {
   }
 
   void cropImage() async {
-    Uint8List? result = await ImageEditingService.cropImage(scannedImages[widget.imageIndex + scannedImages.length]);
+    Uint8List? result = await ImageEditingService.cropImage(scannedImages[scannedImages.length - 1]);
     if(result != null){
       setState(() {
-        scannedImages[widget.imageIndex + scannedImages.length] = result;
+        scannedImages[scannedImages.length - 1] = result;
       });
     }
   }
 
   void rotateImage() async {
-    Uint8List? result = await ImageEditingService.rotateImage(scannedImages[widget.imageIndex + scannedImages.length]);
+    Uint8List? result = await ImageEditingService.rotateImage(scannedImages[scannedImages.length - 1]);
     if(result != null){
       setState(() {
-        scannedImages[widget.imageIndex + scannedImages.length] = result;
+        scannedImages[scannedImages.length - 1] = result;
       });
     }
   }
 
   @override
   void initState() {
-    widget.processedImages.forEach((image) {
-      scannedImages.add(image);
-    });
+    scannedImages.add(widget.processedImage);
     super.initState();
   }
 
@@ -66,14 +63,14 @@ class _ScanImageFromCameraScreenState extends State<ScanImageFromCameraScreen> {
             child: ScanImageHeader(
               context: context,
               isLoading: false,
-              imageNumber: scannedImages.length + widget.imageIndex,
+              imageNumber: scannedImages.length,
             ),
           ),
           Expanded(
             flex: 6,
             child: Container(
               color: Colors.black,
-              child: Image.memory(scannedImages[widget.imageIndex + scannedImages.length - 1]),
+              child: Image.memory(scannedImages[scannedImages.length - 1]),
             ),
           ),
           Expanded(

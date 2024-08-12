@@ -30,7 +30,7 @@ class _CameraScreenState extends State<CameraScreen> {
   int _frameHeight = 0;
   int _frameWidth = 0;
   int detectedDocumentFramesNumber = 0;
-  List<Uint8List> processedImages = [];
+  late Uint8List processedImage;
   double cameraWidthFactor = 1.1;
 
   TextStyle textStyle = const TextStyle(color: Colors.white);
@@ -103,13 +103,12 @@ class _CameraScreenState extends State<CameraScreen> {
             if (detectedDocumentFramesNumber == 3) {
               ffi.Pointer<ffi.Uint8> cppPointer = encodedOutputImage[0];
               Uint8List encodedImageBytes = cppPointer.asTypedList(scanFrameResult.outputBufferSize);
-              processedImages.add(encodedImageBytes);
+              processedImage = encodedImageBytes;
 
               await Navigator.of(context).push(
                   MaterialPageRoute(
                       builder: (context) => ScanImageFromCameraScreen(
-                        imageIndex: processedImages.length - 1,
-                        processedImages: processedImages,
+                        processedImage: processedImage,
                         onFinish: widget.onFinish,
                       )
                   ));
