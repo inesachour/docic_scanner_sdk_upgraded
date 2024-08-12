@@ -23,7 +23,7 @@ This is an example of how the file should look:
 }
 ```
 
-### 3- Implementing ###
+### 3- Implementing the code ###
 To implement the document scanner you just need to write this code inside your application:
 
 ```
