@@ -34,6 +34,8 @@ DocumentScannerOcr(
 ),
 ```
 
+The **onFinish** function is triggered when the user confirms that they have finished scanning all necessary documents.
+
 ## II- What does the package return? ##
 The package returns a **ScannerResult** class that contains 3 parameters.
 
