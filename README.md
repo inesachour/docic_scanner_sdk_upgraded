@@ -30,13 +30,16 @@ To implement the document scanner you just need to write this code inside your a
 ```
 DocumentScannerOcr( 
     onFinish: (ScannerResult scannerResult) {
-        \\write your own code
+        \\ write your own code
     }
 ),
 ```
 
 ## II- What does the package return? ##
 The package returns a 'ScannerResult' class that contains 3 parameters.
-* pdfBytes:  A list of bytes representing the generated PDF including all scanned images (List<int>).
-* images: A list of the scanned images (List<Uint8List>).
-* numberOfPages: The total number of pages in the document.
+
+- pdfBytes:  A list of bytes representing the generated PDF including all scanned images (List<int>).
+
+- images: A list of the scanned images (List<Uint8List>).
+
+- numberOfPages: The total number of pages in the document.
