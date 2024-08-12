@@ -36,6 +36,7 @@ class _ScanResultScreenState extends State<ScanResultScreen> {
                     child: Text("Annuler", style: textStyle,),
                     onTap: (){
                       Navigator.pop(context);
+                      Navigator.pop(context);
                     },
                   ),
                   GestureDetector(
