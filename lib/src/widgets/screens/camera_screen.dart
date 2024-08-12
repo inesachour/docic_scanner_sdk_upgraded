@@ -57,7 +57,7 @@ class _CameraScreenState extends State<CameraScreen> {
         setState(() {});
         int skipFrame = 0;
         _cameraController!.startImageStream((image) async {
-          skipFrame = (skipFrame + 1) % 5;
+          skipFrame = (skipFrame + 1) % 15;
           if (skipFrame == 0) {
             final ffi.Pointer<ffi.Uint8> yData = malloc.allocate<ffi.Uint8>(image.planes[0].bytes.length);
             final ffi.Pointer<ffi.Uint8> uData = malloc.allocate<ffi.Uint8>(image.planes[1].bytes.length);
@@ -100,7 +100,7 @@ class _CameraScreenState extends State<CameraScreen> {
               detectedDocumentFramesNumber = 0;
             }
 
-            if (detectedDocumentFramesNumber == 6) {
+            if (detectedDocumentFramesNumber == 3) {
               ffi.Pointer<ffi.Uint8> cppPointer = encodedOutputImage[0];
               Uint8List encodedImageBytes = cppPointer.asTypedList(scanFrameResult.outputBufferSize);
               processedImages.add(encodedImageBytes);

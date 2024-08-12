@@ -6,19 +6,20 @@ DocumentScanner::DocumentScanner()
 // Preprocess the input image for document scanning
 Mat DocumentScanner::preprocessImage(const Mat& image)
 {
-    Mat imageClone;
     Mat gray;
 
+    // Convert to grayscale
+    cvtColor(image, gray, COLOR_BGR2GRAY);
+
     // Determine kernel size for morphological operations based on image dimensions
-    int kernelSize = std::min(19, std::max(3, int(0.0026 * image.rows + 0.0026 * image.cols)));
+    int kernelSize = std::min(19, std::max(3, int(0.0027 * image.rows + 0.0027 * image.cols)));
     if (kernelSize % 2 == 0) kernelSize--;
     Mat kernel = getStructuringElement(MORPH_RECT, Size(kernelSize, kernelSize));
 
     // Apply morphological closing operation
-    morphologyEx(image, imageClone, MORPH_CLOSE, kernel, Point(-1, -1), 3);
+    morphologyEx(gray, gray, MORPH_CLOSE, kernel, Point(-1, -1), 3);
 
     // Convert to grayscale and apply Gaussian blur
-    cvtColor(imageClone, gray, COLOR_BGR2GRAY);
     GaussianBlur(gray, gray, Size(kernelSize, kernelSize), 0);
 
     // Adaptive thresholding to create a binary image
@@ -195,165 +196,100 @@ Mat DocumentScanner::transformAndCropImage(const Mat& image, const vector<Point>
     return finalImage;
 }
 
-Coordinate DocumentScanner::createCoordinate(double x, double y)
+// Returns the detected corners
+vector<Point> DocumentScanner::scanDocument(Mat image, bool isDocumentDetected, Mat* resultImage)
 {
-    Coordinate coordinate;
-    coordinate.x = x;
-    coordinate.y = y;
-    return coordinate;
-}
-
-ScanFrameResult DocumentScanner::createScanFrameResult(Coordinate topLeft, Coordinate topRight, Coordinate bottomLeft, Coordinate bottomRight, int outputBufferSize)
-{
-    DetectedCorners detectedCorners;
-    detectedCorners.topLeft = topLeft;
-    detectedCorners.topRight = topRight;
-    detectedCorners.bottomLeft = bottomLeft;
-    detectedCorners.bottomRight = bottomRight;
-
-    ScanFrameResult scanFrameResult;
-    scanFrameResult.corners = detectedCorners;
-    scanFrameResult.outputBufferSize = outputBufferSize;
-
-    return scanFrameResult;
-}
-
-// Function that returns the detected corners and the buffer length if a document is detected (after a certain number of frames)
-ScanFrameResult DocumentScanner::scanFrame(uint8_t* y, uint8_t* u, uint8_t* v, int height, int width, int bytesPerRow, int bytesPerPixel, bool isDocumentDetected, char* dataPath, uchar** encodedOutput)
-{
-    Mat image = convertYUVtoRGB(y, u, v, height, width, bytesPerRow, bytesPerPixel);
-
-    if (image.empty()) {
-        return createScanFrameResult(createCoordinate(0, 0), createCoordinate(0, 0), createCoordinate(0, 0), createCoordinate(0, 0), 0);
-    }
-
-    struct DetectedCorners coordinate;
-
     Mat processedImage = image.clone();
     processedImage = preprocessImage(processedImage);
     vector<vector<Point>> contours = detectContour(processedImage);
-    vector<uchar> buf;
-    int bufferSize = 0;
 
     if (contours.empty()) {
-        return createScanFrameResult(createCoordinate(0, 0), createCoordinate(0, 0), createCoordinate(0, 0), createCoordinate(0, 0), 0);
+        return {};
     }
 
     vector<Point> orderedCorners = findCorners(contours);
 
     if (isDocumentDetected) {
-        Mat result = transformAndCropImage(image, orderedCorners);
-
-        TesseractOCR ocr = TesseractOCR();
-        int rotationAngle = ocr.detectRotationAngle(result,dataPath);
-        result = rotateImage(result, rotationAngle);
-
-        imencode(".jpg", result, buf);
-        *encodedOutput = (unsigned char*)malloc(buf.size());
-        for (int i = 0; i < buf.size(); i++)
-            (*encodedOutput)[i] = buf[i];
-        bufferSize = (int)buf.size();
+        *resultImage = transformAndCropImage(image, orderedCorners);
     }
 
-    return createScanFrameResult(
-            createCoordinate((double)orderedCorners[0].x / image.size().width, (double)orderedCorners[0].y / image.size().height),
-            createCoordinate((double)orderedCorners[1].x / image.size().width, (double)orderedCorners[1].y / image.size().height),
-            createCoordinate((double)orderedCorners[3].x / image.size().width, (double)orderedCorners[3].y / image.size().height),
-            createCoordinate((double)orderedCorners[2].x / image.size().width, (double)orderedCorners[2].y / image.size().height),
-            bufferSize
-    );
+    return orderedCorners;
 }
 
-// Function that converts YUV420 image to RGB
-Mat DocumentScanner::convertYUVtoRGB(uint8_t* y, uint8_t* u, uint8_t* v, int height, int width, int bytesPerRow, int bytesPerPixel)
+// Detect the predominant rotation angle from image lines
+int DocumentScanner::detectRotationAngle(const Mat& image)
 {
-    int uvIndex, index;
-    int yp, up, vp;
-    int r, g, b;
-    int rt, gt, bt;
+    map<int, int> anglesNumbers;
 
-    Mat image(height, width, CV_8UC3);
+    Mat gray;
+    cvtColor(image, gray, COLOR_BGR2GRAY);
 
-    // Iterate over each pixel in the image
-    for (int i = 0; i < width; ++i)
-    {
-        for (int j = 0; j < height; ++j)
-        {
-            // Calculate indices for YUV components
-            uvIndex = bytesPerPixel * ((int)floor(i / 2)) + bytesPerRow * ((int)floor(j / 2));
-            index = j * width + i;
+    Mat edges;
+    // Detect edges using Canny
+    Canny(gray, edges, 100, 200, 3);
 
-            // Extract YUV components for the current pixel
-            yp = y[index];
-            up = u[uvIndex];
-            vp = v[uvIndex];
+    vector<Vec4i> lines;
+    // Detect lines using Hough Transform
+    HoughLinesP(edges, lines, 1, CV_PI / 180, 150, 100, 30);
 
-            // Convert YUV to RGB
-            rt = round(yp + vp * 1436 / 1024 - 179);
-            gt = round(yp - up * 46549 / 131072 + 44 - vp * 93604 / 131072 + 91);
-            bt = round(yp + up * 1814 / 1024 - 227);
+    Mat imageWithLines = image.clone();
 
-            // Clip RGB values to [0, 255]
-            r = rt < 0 ? 0 : (rt > 255 ? 255 : rt);
-            g = gt < 0 ? 0 : (gt > 255 ? 255 : gt);
-            b = bt < 0 ? 0 : (bt > 255 ? 255 : bt);
+    for (size_t i = 0; i < lines.size(); i++) {
+        Vec4i l = lines[i];
+        double dx = l[2] - l[0];
+        double dy = l[3] - l[1];
+        double angle = atan2(dy, dx) * 180 / CV_PI;
 
-            // Set RGB values for the current pixel in the image
-            image.at<Vec3b>(j, i) = Vec3b(b, g, r);
+        if (angle < 0) {
+            angle += 360;
+        }
+
+        // Consider only angles close to multiples of 90 degrees
+        if (abs(angle) <= 10 || abs(angle - 90) <= 10 || abs(angle - 180) <= 10 || abs(angle - 270) <= 10 || abs(angle - 360) <= 10) {
+            int ceiledAngle = ceil(angle);
+
+            int distances[5] = { ceiledAngle, abs(ceiledAngle - 90), abs(ceiledAngle - 180), abs(ceiledAngle - 270), abs(ceiledAngle - 360) };
+
+            // Find the closest multiple of 90 degrees
+            int minIndex = 0;
+            for (int i = 1; i < 5; ++i) {
+                if (distances[i] < distances[minIndex]) {
+                    minIndex = i;
+                }
+            }
+
+            if (minIndex == 4) {
+                ceiledAngle = 0;
+            }
+            else {
+                ceiledAngle = minIndex * 90;
+            }
+
+            auto it = anglesNumbers.find(ceiledAngle);
+            if (it != anglesNumbers.end()) {
+                ++(it->second);
+            }
+            else {
+                anglesNumbers.insert(make_pair(ceiledAngle, 1));
+            }
         }
     }
 
-    // Rotate the image clockwise
-    rotate(image, image, ROTATE_90_CLOCKWISE);
+    // Find the angle with the highest frequency
+    int maxKey = 0;
+    if (!anglesNumbers.empty()) {
+        auto it = anglesNumbers.begin();
+        maxKey = it->first;
+        int maxValue = it->second;
 
-    return image;
-}
-
-// Function to scan an entire image and return the transformed and cropped document
-int DocumentScanner::scanImage(char* path, char* dataPath, uchar** encodedOutput)
-{
-    Mat image = imread(path);
-
-    if (image.empty()) {
-        return 0;
+        for (++it; it != anglesNumbers.end(); ++it) {
+            if (it->second > maxValue) {
+                maxKey = it->first;
+                maxValue = it->second;
+            }
+        }
     }
 
-    Mat processedImage = image.clone();
-    processedImage = preprocessImage(processedImage);
-    vector<vector<Point>> contours = detectContour(processedImage);
-    vector<Point> orderedCorners = findCorners(contours);
-    vector<uchar> buf;
-    if (orderedCorners.empty()) {
-        return 0;
-    }
-    else {
-        Mat result = transformAndCropImage(image, orderedCorners);
 
-        TesseractOCR ocr = TesseractOCR();
-        int rotationAngle = ocr.detectRotationAngle(result, dataPath);
-        result = rotateImage(result, rotationAngle);
-
-        imencode(".jpg", result, buf);
-        *encodedOutput = (unsigned char*)malloc(buf.size());
-        for (int i = 0; i < buf.size(); i++)
-            (*encodedOutput)[i] = buf[i];
-        return (int)buf.size();
-    }
-}
-
-Mat DocumentScanner::rotateImage(Mat image, int angle)
-{
-    Mat result = image;
-
-    if (angle == 90) {
-        rotate(image, image, ROTATE_90_CLOCKWISE);
-    }
-    else if (angle == 180) {
-        rotate(image, image, ROTATE_180);
-    }
-    else if (angle == 270) {
-        rotate(image, image, ROTATE_90_COUNTERCLOCKWISE);
-    }
-
-    return result;
+    return maxKey;
 }
