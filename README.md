@@ -1,29 +1,42 @@
-# README #
+# Document Scanner #
 
-This README would normally document whatever steps are necessary to get your application up and running.
+This package includes a document scanner implemented using OpenCV, with an automatic orientation detection feature for scanned images, leveraging both OpenCV and Tesseract.
 
-### What is this repository for? ###
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+## I- How to use the package? ##
+### 1- Adding language data files ###
+Create a folder named 'assets' in the root of your project, and inside it, create another folder named 'tessdata'. 
+Then, place the language data files that you need into the 'tessdata' folder.
 
-### How do I get set up? ###
+### 2- Creating tessdata_config.json file ###
+Create a file named tessdata_config.json inside the assets folder. 
+This file must include the names of all the language data files. 
 
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
+This is an example of how the file should look:
+```json
+{
+  "files": [
+    "ara.traineddata",
+    "eng.traineddata",
+    "fra.traineddata",
+    "osd.traineddata"
+  ]
+}
+```
 
-### Contribution guidelines ###
+### 3- Implementing ###
+To implement the document scanner you just need to write this code inside your application:
 
-* Writing tests
-* Code review
-* Other guidelines
+```
+DocumentScannerOcr( 
+    onFinish: (ScannerResult scannerResult) {
+        \\write your own code
+    }
+),
+```
 
-### Who do I talk to? ###
-
-* Repo owner or admin
-* Other community or team contact
+## II- What does the package return? ##
+The package returns a 'ScannerResult' class that contains 3 parameters.
+* pdfBytes:  A list of bytes representing the generated PDF including all scanned images (List<int>).
+* images: A list of the scanned images (List<Uint8List>).
+* numberOfPages: The total number of pages in the document.
