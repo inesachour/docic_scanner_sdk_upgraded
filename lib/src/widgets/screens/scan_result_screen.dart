@@ -1,20 +1,22 @@
 import 'dart:typed_data';
 import 'package:document_scanner_ocr/document_scanner_ocr.dart';
 import 'package:document_scanner_ocr/src/services/pdf_service.dart';
+import 'package:document_scanner_ocr/src/utils/scanned_images_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:pdf/widgets.dart' as pw;
 
 class ScanResultScreen extends StatefulWidget {
-  List<Uint8List> images;
   Function(ScannerResult) onFinish;
 
-  ScanResultScreen({super.key, required this.images, required this.onFinish});
+  ScanResultScreen({super.key, required this.onFinish});
 
   @override
   State<ScanResultScreen> createState() => _ScanResultScreenState();
 }
 
 class _ScanResultScreenState extends State<ScanResultScreen> {
+
+  final scannedImages = ScannedImagesManager().imageBytes;
 
   TextStyle textStyle = const TextStyle(color: Colors.white, decoration: TextDecoration.none, fontSize: 14);
 
@@ -35,19 +37,29 @@ class _ScanResultScreenState extends State<ScanResultScreen> {
                   GestureDetector(
                     child: Text("Annuler", style: textStyle,),
                     onTap: (){
+                      scannedImages.clear();
                       Navigator.pop(context);
                       Navigator.pop(context);
                     },
                   ),
+
+                  GestureDetector(
+                    child: Text("Ajouter", style: textStyle,),
+                    onTap: (){
+                      Navigator.pop(context);
+                      Navigator.pop(context);
+                    },
+                  ),
+
                   GestureDetector(
                     child: Text("Confirmer", style: textStyle,),
                     onTap: () async {
-                      pw.Document pdf = PdfService.generatePdfFile(widget.images);
+                      pw.Document pdf = PdfService.generatePdfFile(scannedImages);
                       List<int> pdfBytes = await pdf.save();
                       widget.onFinish.call(
                           ScannerResult(
-                            numberOfPages: widget.images.length,
-                            images: widget.images,
+                            numberOfPages: scannedImages.length,
+                            images: scannedImages,
                             pdfBytes: pdfBytes,
                           )
                       );
@@ -67,7 +79,7 @@ class _ScanResultScreenState extends State<ScanResultScreen> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Center(child: Image.memory(widget.images[index])),
+                        Center(child: Image.memory(scannedImages[index])),
                         Container(
                           child: Text("Page ${index+1}", style: textStyle, textAlign: TextAlign.center,),
                           color: Colors.black,
@@ -78,7 +90,7 @@ class _ScanResultScreenState extends State<ScanResultScreen> {
                     ),
                   );
                   },
-              itemCount: widget.images.length,
+              itemCount: scannedImages.length,
             ),
           ),
         ],

@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 import 'package:document_scanner_ocr/document_scanner_ocr.dart';
 import 'package:document_scanner_ocr/src/services/image_editing_service.dart';
-import 'package:document_scanner_ocr/src/widgets/add_page_popup.dart';
+import 'package:document_scanner_ocr/src/utils/scanned_images_manager.dart';
 import 'package:document_scanner_ocr/src/widgets/common/image_details_widgets.dart';
 import 'package:document_scanner_ocr/src/widgets/screens/scan_result_screen.dart';
 import 'package:flutter/material.dart';
@@ -19,41 +19,42 @@ class ScanImageFromCameraScreen extends StatefulWidget {
 
 class _ScanImageFromCameraScreenState extends State<ScanImageFromCameraScreen> {
 
+  final scannedImages = ScannedImagesManager().imageBytes;
+
   void onNextButtonClick() async {
-    final bool addAnotherImage = await showDialog(
-      context: context,
-      builder: (BuildContext context) => const AddPagePopup(),
-    );
-    if (addAnotherImage) {
-      Navigator.pop(context);
-    } else {
-      Navigator.of(context).push(
-          MaterialPageRoute(
-              builder: (context) =>
-                  ScanResultScreen(
-                    images: widget.processedImages,
-                    onFinish: widget.onFinish,
-                  )
-          ));
-    }
+    Navigator.of(context).push(
+        MaterialPageRoute(
+            builder: (context) =>
+                ScanResultScreen(
+                  onFinish: widget.onFinish,
+                )
+        ));
   }
 
   void cropImage() async {
-    Uint8List? result = await ImageEditingService.cropImage(widget.processedImages[widget.imageIndex]);
+    Uint8List? result = await ImageEditingService.cropImage(scannedImages[widget.imageIndex + scannedImages.length]);
     if(result != null){
       setState(() {
-        widget.processedImages[widget.imageIndex] = result;
+        scannedImages[widget.imageIndex + scannedImages.length] = result;
       });
     }
   }
 
   void rotateImage() async {
-    Uint8List? result = await ImageEditingService.rotateImage(widget.processedImages[widget.imageIndex]);
+    Uint8List? result = await ImageEditingService.rotateImage(scannedImages[widget.imageIndex + scannedImages.length]);
     if(result != null){
       setState(() {
-        widget.processedImages[widget.imageIndex] = result;
+        scannedImages[widget.imageIndex + scannedImages.length] = result;
       });
     }
+  }
+
+  @override
+  void initState() {
+    widget.processedImages.forEach((image) {
+      scannedImages.add(image);
+    });
+    super.initState();
   }
 
   @override
@@ -65,14 +66,14 @@ class _ScanImageFromCameraScreenState extends State<ScanImageFromCameraScreen> {
             child: ScanImageHeader(
               context: context,
               isLoading: false,
-              imageNumber: widget.imageIndex + 1,
+              imageNumber: scannedImages.length + widget.imageIndex,
             ),
           ),
           Expanded(
             flex: 6,
             child: Container(
               color: Colors.black,
-              child: Image.memory(widget.processedImages[widget.imageIndex]),
+              child: Image.memory(scannedImages[widget.imageIndex + scannedImages.length - 1]),
             ),
           ),
           Expanded(

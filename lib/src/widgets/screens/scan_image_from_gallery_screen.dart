@@ -8,6 +8,7 @@ import 'package:document_scanner_ocr/document_scanner_ocr.dart';
 import 'package:document_scanner_ocr/src/docic_mobile_sdk.dart';
 import 'package:document_scanner_ocr/src/services/image_editing_service.dart';
 import 'package:document_scanner_ocr/src/services/tessdata_service.dart';
+import 'package:document_scanner_ocr/src/utils/scanned_images_manager.dart';
 import 'package:document_scanner_ocr/src/widgets/common/image_details_widgets.dart';
 import 'package:document_scanner_ocr/src/widgets/screens/scan_result_screen.dart';
 import 'package:ffi/ffi.dart';
@@ -33,9 +34,12 @@ class _ScanImageFromGalleryScreenState
   late StreamSubscription sub; // Subscription for the isolate port
   late int imagesNumber;
 
-  int _currentImageIndex = 0;
+  late int _currentGlobalScannedImageIndex;
+  int _currentLocalScannedImageIndex = 0;
+
   bool _isLoading = true;
-  List<Uint8List> processedImages = [];
+
+  final scannedImages = ScannedImagesManager().imageBytes;
 
   Future<void> scanCurrentImage(XFile image) async {
     setState(() {
@@ -54,7 +58,7 @@ class _ScanImageFromGalleryScreenState
       _isLoading = false;
 
       if (processedImageBytes == null) {
-        processedImageBytes = await widget.images[_currentImageIndex].readAsBytes();
+        processedImageBytes = await widget.images[_currentLocalScannedImageIndex].readAsBytes();
 
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text("Aucun document n'a été détecté"),
@@ -63,21 +67,22 @@ class _ScanImageFromGalleryScreenState
         ));
       }
 
-      processedImages.add(processedImageBytes);
+      scannedImages.add(processedImageBytes);
       setState(() {});
     });
   }
 
   void onNextButtonClick() async {
-    _currentImageIndex++;
+    _currentLocalScannedImageIndex++;
+    _currentGlobalScannedImageIndex++;
 
-    if (_currentImageIndex < imagesNumber - 1) {
-      scanCurrentImage(widget.images[_currentImageIndex]);
+    if (_currentLocalScannedImageIndex < imagesNumber - 1) {
+      scanCurrentImage(widget.images[_currentLocalScannedImageIndex]);
       setState(() {});
     }
-    else if (_currentImageIndex == imagesNumber - 1) {
+    else if (_currentLocalScannedImageIndex == imagesNumber - 1) {
       _isLastImage = true;
-      scanCurrentImage(widget.images[_currentImageIndex]);
+      scanCurrentImage(widget.images[_currentLocalScannedImageIndex]);
       setState(() {});
     }
     else {
@@ -85,7 +90,6 @@ class _ScanImageFromGalleryScreenState
           MaterialPageRoute(
               builder: (context) =>
                   ScanResultScreen(
-                    images: processedImages,
                     onFinish: widget.onFinish,
                   )
           ));
@@ -93,29 +97,30 @@ class _ScanImageFromGalleryScreenState
   }
 
   void cropImage() async {
-    Uint8List? result = await ImageEditingService.cropImage(processedImages[_currentImageIndex]);
+    Uint8List? result = await ImageEditingService.cropImage(scannedImages[_currentGlobalScannedImageIndex]);
     if(result != null){
       setState(() {
-        processedImages[_currentImageIndex] = result;
+        scannedImages[_currentGlobalScannedImageIndex] = result;
       });
     }
   }
 
   void rotateImage() async {
-    Uint8List? result = await ImageEditingService.rotateImage(processedImages[_currentImageIndex]);
+    Uint8List? result = await ImageEditingService.rotateImage(scannedImages[_currentGlobalScannedImageIndex]);
     if(result != null){
       setState(() {
-        processedImages[_currentImageIndex] = result;
+        scannedImages[_currentGlobalScannedImageIndex] = result;
       });
     }
   }
 
   @override
   void initState() {
-    super.initState();
+    _currentGlobalScannedImageIndex = scannedImages.length;
     imagesNumber = widget.images.length;
-    _isLastImage = (imagesNumber - 1 == _currentImageIndex);
+    _isLastImage = (imagesNumber - 1 == _currentLocalScannedImageIndex);
     scanCurrentImage(widget.images[0]);
+    super.initState();
   }
 
   @override
@@ -135,7 +140,7 @@ class _ScanImageFromGalleryScreenState
             child: ScanImageHeader(
               context: context,
               isLoading: _isLoading,
-              imageNumber: _currentImageIndex + 1,
+              imageNumber: _currentGlobalScannedImageIndex + 1,
             ),
           ),
           Expanded(
@@ -145,13 +150,13 @@ class _ScanImageFromGalleryScreenState
               child: Stack(
                 alignment: Alignment.center,
                 children: [
-                  _currentImageIndex >= processedImages.length
+                  _currentGlobalScannedImageIndex >= scannedImages.length
                       ? Image.file(
-                          File(widget.images[_currentImageIndex].path),
+                          File(widget.images[_currentLocalScannedImageIndex].path),
                           fit: BoxFit.fitHeight,
                         )
                       : Image.memory(
-                          processedImages[_currentImageIndex],
+                          scannedImages[_currentGlobalScannedImageIndex],
                           fit: BoxFit.fitHeight,
                         ),
                   if (_isLoading)
