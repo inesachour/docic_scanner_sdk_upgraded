@@ -231,8 +231,16 @@ class _CameraScreenState extends State<CameraScreen> {
                         ),
                         Expanded(
                           child: GestureDetector(
-                            onTap: () {
-                              //showDialog(barrierDismissible: false ,context: context, builder: (context) => AddPagePopup());
+                            onTap: () async {
+                              XFile image = await _cameraController!.takePicture();
+                              Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          ScanImageFromGalleryScreen(
+                                            images: [image],
+                                            onFinish: widget.onFinish,
+                                          )
+                                  ));
                             },
                             child: Container(
                               margin: const EdgeInsets.all(6.0),
