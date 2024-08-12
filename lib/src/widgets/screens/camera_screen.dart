@@ -100,7 +100,7 @@ class _CameraScreenState extends State<CameraScreen> {
               detectedDocumentFramesNumber = 0;
             }
 
-            if (detectedDocumentFramesNumber == 3) {
+            if (detectedDocumentFramesNumber == 2) {
               ffi.Pointer<ffi.Uint8> cppPointer = encodedOutputImage[0];
               Uint8List encodedImageBytes = cppPointer.asTypedList(scanFrameResult.outputBufferSize);
               processedImage = encodedImageBytes;
