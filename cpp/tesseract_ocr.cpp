@@ -65,7 +65,7 @@ int TesseractOCR::detectRotationAngle(const Mat& image, char* dataPath)
         return 0;
     }
 
-    Mat preprocessedImage = preprocessImage(image);
+    Mat preprocessedImage = image;
     api->SetPageSegMode(tesseract::PSM_AUTO_OSD);
     api->SetVariable("tessedit_char_whitelist", "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz");
     api->SetImage(preprocessedImage.data, preprocessedImage.cols, preprocessedImage.rows, preprocessedImage.channels(), preprocessedImage.step);
